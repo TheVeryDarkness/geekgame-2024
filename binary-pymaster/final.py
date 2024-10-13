@@ -5,55 +5,60 @@ import base64
 
 
 class adJGrTXOYN:
-    def __init__(adJGrTXOYP, OOOO, OOO0):
-        adJGrTXOYP.OOOO = OOOO
-        adJGrTXOYP.OOO0 = OOO0
-        adJGrTXOYP.OO0O = None
-        adJGrTXOYP.O0OO = None
-        adJGrTXOYP.O0O0 = None
+    OO0O: "adJGrTXOYN | None"
+    O0OO: "adJGrTXOYN | None"
+    O0O0: "adJGrTXOYN | None"
+    def __init__(self, OOOO, OOO0):
+        self.OOOO = OOOO
+        self.OOO0 = OOO0
+        self.OO0O = None
+        self.O0OO = None
+        self.O0O0 = None
 
 
 class adJGrTXOYb:
-    def __init__(adJGrTXOYP):
-        adJGrTXOYP.IIII = None
+    IIII: adJGrTXOYN | None
+    def __init__(self):
+        self.IIII = None
 
-    def adJGrTXOYb(adJGrTXOYP, adJGrTXOYo):
+    def adJGrTXOYb(self, adJGrTXOYo: adJGrTXOYN):
         while adJGrTXOYo.OO0O != None:
             if adJGrTXOYo.OO0O.OO0O == None:
                 if adJGrTXOYo == adJGrTXOYo.OO0O.O0OO:
-                    adJGrTXOYP.adJGrTXOYn(adJGrTXOYo.OO0O)
+                    self.adJGrTXOYn(adJGrTXOYo.OO0O)
                 else:
-                    adJGrTXOYP.adJGrTXOYV(adJGrTXOYo.OO0O)
+                    self.adJGrTXOYV(adJGrTXOYo.OO0O)
             elif (
                 adJGrTXOYo == adJGrTXOYo.OO0O.O0OO
                 and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0OO
             ):
-                adJGrTXOYP.adJGrTXOYn(adJGrTXOYo.OO0O.OO0O)
-                adJGrTXOYP.adJGrTXOYn(adJGrTXOYo.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.OO0O.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.OO0O)
             elif (
                 adJGrTXOYo == adJGrTXOYo.OO0O.O0O0
                 and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0O0
             ):
-                adJGrTXOYP.adJGrTXOYV(adJGrTXOYo.OO0O.OO0O)
-                adJGrTXOYP.adJGrTXOYV(adJGrTXOYo.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.OO0O.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.OO0O)
             elif (
                 adJGrTXOYo == adJGrTXOYo.OO0O.O0O0
                 and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0OO
             ):
-                adJGrTXOYP.adJGrTXOYV(adJGrTXOYo.OO0O)
-                adJGrTXOYP.adJGrTXOYn(adJGrTXOYo.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.OO0O)
             else:
-                adJGrTXOYP.adJGrTXOYn(adJGrTXOYo.OO0O)
-                adJGrTXOYP.adJGrTXOYV(adJGrTXOYo.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.OO0O)
 
-    def adJGrTXOYV(adJGrTXOYP, x):
+    def adJGrTXOYV(self, x: adJGrTXOYN):
+        assert x.O0O0 != None
         y = x.O0O0
         x.O0O0 = y.O0OO
         if y.O0OO != None:
             y.O0OO.OO0O = x
         y.OO0O = x.OO0O
         if x.OO0O == None:
-            adJGrTXOYP.IIII = y
+            self.IIII = y
         elif x == x.OO0O.O0OO:
             x.OO0O.O0OO = y
         else:
@@ -61,14 +66,15 @@ class adJGrTXOYb:
         y.O0OO = x
         x.OO0O = y
 
-    def adJGrTXOYn(adJGrTXOYP, x):
+    def adJGrTXOYn(self, x: adJGrTXOYN):
+        assert x.O0OO != None
         y = x.O0OO
         x.O0OO = y.O0O0
         if y.O0O0 != None:
             y.O0O0.OO0O = x
         y.OO0O = x.OO0O
         if x.OO0O == None:
-            adJGrTXOYP.IIII = y
+            self.IIII = y
         elif x == x.OO0O.O0O0:
             x.OO0O.O0O0 = y
         else:
@@ -76,9 +82,9 @@ class adJGrTXOYb:
         y.O0O0 = x
         x.OO0O = y
 
-    def adJGrTXOYx(adJGrTXOYP, OOOO, OOO0):
+    def adJGrTXOYx(self, OOOO: float, OOO0: int):
         adJGrTXOYo = adJGrTXOYN(OOOO, OOO0)
-        adJGrTXOYu = adJGrTXOYP.IIII
+        adJGrTXOYu = self.IIII
         OO0O = None
         while adJGrTXOYu != None:
             OO0O = adJGrTXOYu
@@ -88,15 +94,15 @@ class adJGrTXOYb:
                 adJGrTXOYu = adJGrTXOYu.O0O0
         adJGrTXOYo.OO0O = OO0O
         if OO0O == None:
-            adJGrTXOYP.IIII = adJGrTXOYo
+            self.IIII = adJGrTXOYo
         elif OOOO < OO0O.OOOO:
             OO0O.O0OO = adJGrTXOYo
         else:
             OO0O.O0O0 = adJGrTXOYo
-        adJGrTXOYP.adJGrTXOYb(adJGrTXOYo)
+        self.adJGrTXOYb(adJGrTXOYo)
 
 
-def adJGrTXOYQ(adJGrTXOYo):
+def adJGrTXOYQ(adJGrTXOYo: adJGrTXOYN | None) -> bytes:
     s = b""
     if adJGrTXOYo != None:
         s += bytes([adJGrTXOYo.OOO0 ^ random.randint(0, 0xFF)])
@@ -105,7 +111,7 @@ def adJGrTXOYQ(adJGrTXOYo):
     return s
 
 
-def adJGrTXOYy(adJGrTXOYj):
+def adJGrTXOYy(adJGrTXOYj: adJGrTXOYb):
     adJGrTXOYu = adJGrTXOYj.IIII
     OO0O = None
     while adJGrTXOYu != None:
@@ -114,33 +120,35 @@ def adJGrTXOYy(adJGrTXOYj):
             adJGrTXOYu = adJGrTXOYu.O0OO
         else:
             adJGrTXOYu = adJGrTXOYu.O0O0
+    assert OO0O != None
     adJGrTXOYj.adJGrTXOYb(OO0O)
 
 
 def adJGrTXOYD():
     adJGrTXOYj = adJGrTXOYb()
 
-    adJGrTXOYh = input("Please enter the flag: ")
+    flag = input("Please enter the flag: ")
 
-    if len(adJGrTXOYh) != 36:
+    if len(flag) != 36:
         print("Try again!")
         return
-    if adJGrTXOYh[:5] != "flag{" or adJGrTXOYh[-1] != "}":
+    if flag[:5] != "flag{" or flag[-1] != "}":
         print("Try again!")
         return
 
-    for adJGrTXOYL in adJGrTXOYh:
-        adJGrTXOYj.adJGrTXOYx(random.random(), ord(adJGrTXOYL))
+    for c in flag:
+        adJGrTXOYj.adJGrTXOYx(random.random(), ord(c))
 
     for _ in range(0x100):
         adJGrTXOYy(adJGrTXOYj)
 
+    assert adJGrTXOYj.IIII != None
     adJGrTXOYi = adJGrTXOYQ(adJGrTXOYj.IIII)
-    adJGrTXOYU = base64.b64decode("7EclRYPIOsDvLuYKDPLPZi0JbLYB9bQo8CZDlFvwBY07cs6I")
-    if adJGrTXOYi == adJGrTXOYU:
+    encoded_flag3 = base64.b64decode("7EclRYPIOsDvLuYKDPLPZi0JbLYB9bQo8CZDlFvwBY07cs6I")
+    if adJGrTXOYi == encoded_flag3:
         print("You got the flag3!")
     else:
-        print("Try again!")
+        print("Try again! Wrong flag!", adJGrTXOYi, encoded_flag3, sep='\n')
 
 
 if __name__ == "__main__":
