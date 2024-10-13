@@ -1,0 +1,6 @@
+[submodule "yan-yuan-mao-su-cha-shou-ce"]
+	path = yan-yuan-mao-su-cha-shou-ce
+	url = https://gitee.com/circlelq/yan-yuan-mao-su-cha-shou-ce
+[submodule "gs-frontend"]
+	path = gs-frontend
+	url = https://github.com/PKU-GeekGame/gs-frontend
