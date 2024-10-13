@@ -6,12 +6,12 @@ import base64
 
 
 @dataclass
-class adJGrTXOYN:
+class treenode:
     OOOO: float
     OOO0: int
-    OO0O: "adJGrTXOYN | None"
-    O0OO: "adJGrTXOYN | None"
-    O0O0: "adJGrTXOYN | None"
+    OO0O: "treenode | None"
+    O0OO: "treenode | None"
+    O0O0: "treenode | None"
     def __init__(self, OOOO: float, OOO0: int):
         self.OOOO = OOOO
         self.OOO0 = OOO0
@@ -21,12 +21,12 @@ class adJGrTXOYN:
 
 
 @dataclass
-class adJGrTXOYb:
-    IIII: adJGrTXOYN | None
+class tree:
+    inner: treenode | None
     def __init__(self):
-        self.IIII = None
+        self.inner = None
 
-    def adJGrTXOYb(self, adJGrTXOYo: adJGrTXOYN):
+    def adJGrTXOYb(self, adJGrTXOYo: treenode):
         while adJGrTXOYo.OO0O != None:
             if adJGrTXOYo.OO0O.OO0O == None:
                 if adJGrTXOYo == adJGrTXOYo.OO0O.O0OO:
@@ -55,7 +55,7 @@ class adJGrTXOYb:
                 self.adJGrTXOYn(adJGrTXOYo.OO0O)
                 self.adJGrTXOYV(adJGrTXOYo.OO0O)
 
-    def adJGrTXOYV(self, x: adJGrTXOYN):
+    def adJGrTXOYV(self, x: treenode):
         assert x.O0O0 != None
         y = x.O0O0
         x.O0O0 = y.O0OO
@@ -63,7 +63,7 @@ class adJGrTXOYb:
             y.O0OO.OO0O = x
         y.OO0O = x.OO0O
         if x.OO0O == None:
-            self.IIII = y
+            self.inner = y
         elif x == x.OO0O.O0OO:
             x.OO0O.O0OO = y
         else:
@@ -71,7 +71,7 @@ class adJGrTXOYb:
         y.O0OO = x
         x.OO0O = y
 
-    def adJGrTXOYn(self, x: adJGrTXOYN):
+    def adJGrTXOYn(self, x: treenode):
         assert x.O0OO != None
         y = x.O0OO
         x.O0OO = y.O0O0
@@ -79,7 +79,7 @@ class adJGrTXOYb:
             y.O0O0.OO0O = x
         y.OO0O = x.OO0O
         if x.OO0O == None:
-            self.IIII = y
+            self.inner = y
         elif x == x.OO0O.O0O0:
             x.OO0O.O0O0 = y
         else:
@@ -88,8 +88,8 @@ class adJGrTXOYb:
         x.OO0O = y
 
     def adJGrTXOYx(self, OOOO: float, OOO0: int):
-        adJGrTXOYo = adJGrTXOYN(OOOO, OOO0)
-        adJGrTXOYu = self.IIII
+        adJGrTXOYo = treenode(OOOO, OOO0)
+        adJGrTXOYu = self.inner
         OO0O = None
         while adJGrTXOYu != None:
             OO0O = adJGrTXOYu
@@ -99,7 +99,7 @@ class adJGrTXOYb:
                 adJGrTXOYu = adJGrTXOYu.O0O0
         adJGrTXOYo.OO0O = OO0O
         if OO0O == None:
-            self.IIII = adJGrTXOYo
+            self.inner = adJGrTXOYo
         elif OOOO < OO0O.OOOO:
             OO0O.O0OO = adJGrTXOYo
         else:
@@ -107,7 +107,7 @@ class adJGrTXOYb:
         self.adJGrTXOYb(adJGrTXOYo)
 
 
-def adJGrTXOYQ(adJGrTXOYo: adJGrTXOYN | None) -> bytes:
+def adJGrTXOYQ(adJGrTXOYo: treenode | None) -> bytes:
     s = b""
     if adJGrTXOYo != None:
         s += bytes([adJGrTXOYo.OOO0 ^ random.randint(0, 0xFF)])
@@ -116,8 +116,8 @@ def adJGrTXOYQ(adJGrTXOYo: adJGrTXOYN | None) -> bytes:
     return s
 
 
-def adJGrTXOYy(adJGrTXOYj: adJGrTXOYb):
-    adJGrTXOYu = adJGrTXOYj.IIII
+def adJGrTXOYy(adJGrTXOYj: tree):
+    adJGrTXOYu = adJGrTXOYj.inner
     OO0O = None
     while adJGrTXOYu != None:
         OO0O = adJGrTXOYu
@@ -130,7 +130,7 @@ def adJGrTXOYy(adJGrTXOYj: adJGrTXOYb):
 
 
 def adJGrTXOYD():
-    adJGrTXOYj = adJGrTXOYb()
+    root = tree()
 
     flag = input("Please enter the flag: ")
 
@@ -142,17 +142,17 @@ def adJGrTXOYD():
         return
 
     for c in flag:
-        adJGrTXOYj.adJGrTXOYx(random.random(), ord(c))
+        root.adJGrTXOYx(random.random(), ord(c))
 
-        print(adJGrTXOYj)
+        print(root)
 
     for _ in range(0x100):
-        adJGrTXOYy(adJGrTXOYj)
+        adJGrTXOYy(root)
 
-        print(adJGrTXOYj)
+        # print(root)
 
-    assert adJGrTXOYj.IIII != None
-    adJGrTXOYi = adJGrTXOYQ(adJGrTXOYj.IIII)
+    assert root.inner != None
+    adJGrTXOYi = adJGrTXOYQ(root.inner)
     encoded_flag3 = base64.b64decode("7EclRYPIOsDvLuYKDPLPZi0JbLYB9bQo8CZDlFvwBY07cs6I")
     if adJGrTXOYi == encoded_flag3:
         print("You got the flag3!")
