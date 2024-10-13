@@ -1,14 +1,18 @@
+from dataclasses import dataclass
 import random
 import base64
 
 # flag1 = "flag{you_Ar3_tHE_MaSTer_OF_PY7h0n}"
 
 
+@dataclass
 class adJGrTXOYN:
+    OOOO: float
+    OOO0: int
     OO0O: "adJGrTXOYN | None"
     O0OO: "adJGrTXOYN | None"
     O0O0: "adJGrTXOYN | None"
-    def __init__(self, OOOO, OOO0):
+    def __init__(self, OOOO: float, OOO0: int):
         self.OOOO = OOOO
         self.OOO0 = OOO0
         self.OO0O = None
@@ -16,6 +20,7 @@ class adJGrTXOYN:
         self.O0O0 = None
 
 
+@dataclass
 class adJGrTXOYb:
     IIII: adJGrTXOYN | None
     def __init__(self):
@@ -139,8 +144,12 @@ def adJGrTXOYD():
     for c in flag:
         adJGrTXOYj.adJGrTXOYx(random.random(), ord(c))
 
+        print(adJGrTXOYj)
+
     for _ in range(0x100):
         adJGrTXOYy(adJGrTXOYj)
+
+        print(adJGrTXOYj)
 
     assert adJGrTXOYj.IIII != None
     adJGrTXOYi = adJGrTXOYQ(adJGrTXOYj.IIII)
