@@ -9,26 +9,26 @@ import base64
 class treenode:
     OOOO: float
     OOO0: int
-    OO0O: "treenode | None"
-    O0OO: "treenode | None"
-    O0O0: "treenode | None"
+    parent: "treenode | None"
+    left: "treenode | None"
+    right: "treenode | None"
     def __init__(self, OOOO: float, OOO0: int):
         self.OOOO = OOOO
         self.OOO0 = OOO0
-        self.OO0O = None
-        self.O0OO = None
-        self.O0O0 = None
+        self.parent = None
+        self.left = None
+        self.right = None
     def record(self, pool: dict[int, tuple[float, int, int, int]]):
         if self.OOO0 in pool:
             return
         # assert self.OO0O == self, (self.OO0O, self)
-        pool[self.OOO0] = (self.OOOO, self.OO0O.OOO0 if self.OO0O else -1, self.O0OO.OOO0 if self.O0OO else -1, self.O0O0.OOO0 if self.O0O0 else -1)
-        if self.OO0O:
-            self.OO0O.record(pool)
-        if self.O0OO:
-            self.O0OO.record(pool)
-        if self.O0O0:
-            self.O0O0.record(pool)
+        pool[self.OOO0] = (self.OOOO, self.parent.OOO0 if self.parent else -1, self.left.OOO0 if self.left else -1, self.right.OOO0 if self.right else -1)
+        if self.parent:
+            self.parent.record(pool)
+        if self.left:
+            self.left.record(pool)
+        if self.right:
+            self.right.record(pool)
         return pool
 
 
@@ -39,92 +39,92 @@ class tree:
         self.inner = None
 
     def adJGrTXOYb(self, adJGrTXOYo: treenode):
-        while adJGrTXOYo.OO0O != None:
-            if adJGrTXOYo.OO0O.OO0O == None:
-                if adJGrTXOYo == adJGrTXOYo.OO0O.O0OO:
-                    self.adJGrTXOYn(adJGrTXOYo.OO0O)
+        while adJGrTXOYo.parent != None:
+            if adJGrTXOYo.parent.parent == None:
+                if adJGrTXOYo == adJGrTXOYo.parent.left:
+                    self.adJGrTXOYn(adJGrTXOYo.parent)
                 else:
-                    self.adJGrTXOYV(adJGrTXOYo.OO0O)
+                    self.adJGrTXOYV(adJGrTXOYo.parent)
             elif (
-                adJGrTXOYo == adJGrTXOYo.OO0O.O0OO
-                and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0OO
+                adJGrTXOYo == adJGrTXOYo.parent.left
+                and adJGrTXOYo.parent == adJGrTXOYo.parent.parent.left
             ):
-                self.adJGrTXOYn(adJGrTXOYo.OO0O.OO0O)
-                self.adJGrTXOYn(adJGrTXOYo.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.parent.parent)
+                self.adJGrTXOYn(adJGrTXOYo.parent)
             elif (
-                adJGrTXOYo == adJGrTXOYo.OO0O.O0O0
-                and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0O0
+                adJGrTXOYo == adJGrTXOYo.parent.right
+                and adJGrTXOYo.parent == adJGrTXOYo.parent.parent.right
             ):
-                self.adJGrTXOYV(adJGrTXOYo.OO0O.OO0O)
-                self.adJGrTXOYV(adJGrTXOYo.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.parent.parent)
+                self.adJGrTXOYV(adJGrTXOYo.parent)
             elif (
-                adJGrTXOYo == adJGrTXOYo.OO0O.O0O0
-                and adJGrTXOYo.OO0O == adJGrTXOYo.OO0O.OO0O.O0OO
+                adJGrTXOYo == adJGrTXOYo.parent.right
+                and adJGrTXOYo.parent == adJGrTXOYo.parent.parent.left
             ):
-                self.adJGrTXOYV(adJGrTXOYo.OO0O)
-                self.adJGrTXOYn(adJGrTXOYo.OO0O)
+                self.adJGrTXOYV(adJGrTXOYo.parent)
+                self.adJGrTXOYn(adJGrTXOYo.parent)
             else:
-                self.adJGrTXOYn(adJGrTXOYo.OO0O)
-                self.adJGrTXOYV(adJGrTXOYo.OO0O)
+                self.adJGrTXOYn(adJGrTXOYo.parent)
+                self.adJGrTXOYV(adJGrTXOYo.parent)
 
     def adJGrTXOYV(self, x: treenode):
-        assert x.O0O0 != None
-        y = x.O0O0
-        x.O0O0 = y.O0OO
-        if y.O0OO != None:
-            y.O0OO.OO0O = x
-        y.OO0O = x.OO0O
-        if x.OO0O == None:
+        assert x.right != None
+        y = x.right
+        x.right = y.left
+        if y.left != None:
+            y.left.parent = x
+        y.parent = x.parent
+        if x.parent == None:
             self.inner = y
-        elif x == x.OO0O.O0OO:
-            x.OO0O.O0OO = y
+        elif x == x.parent.left:
+            x.parent.left = y
         else:
-            x.OO0O.O0O0 = y
-        y.O0OO = x
-        x.OO0O = y
+            x.parent.right = y
+        y.left = x
+        x.parent = y
 
     def adJGrTXOYn(self, x: treenode):
-        assert x.O0OO != None
-        y = x.O0OO
-        x.O0OO = y.O0O0
-        if y.O0O0 != None:
-            y.O0O0.OO0O = x
-        y.OO0O = x.OO0O
-        if x.OO0O == None:
+        assert x.left != None
+        y = x.left
+        x.left = y.right
+        if y.right != None:
+            y.right.parent = x
+        y.parent = x.parent
+        if x.parent == None:
             self.inner = y
-        elif x == x.OO0O.O0O0:
-            x.OO0O.O0O0 = y
+        elif x == x.parent.right:
+            x.parent.right = y
         else:
-            x.OO0O.O0OO = y
-        y.O0O0 = x
-        x.OO0O = y
+            x.parent.left = y
+        y.right = x
+        x.parent = y
 
     def adJGrTXOYx(self, OOOO: float, OOO0: int):
-        adJGrTXOYo = treenode(OOOO, OOO0)
-        adJGrTXOYu = self.inner
+        new_node = treenode(OOOO, OOO0)
+        pointer = self.inner
         OO0O = None
-        while adJGrTXOYu != None:
-            OO0O = adJGrTXOYu
-            if OOOO < adJGrTXOYu.OOOO:
-                adJGrTXOYu = adJGrTXOYu.O0OO
+        while pointer != None:
+            OO0O = pointer
+            if OOOO < pointer.OOOO:
+                pointer = pointer.left
             else:
-                adJGrTXOYu = adJGrTXOYu.O0O0
-        adJGrTXOYo.OO0O = OO0O
+                pointer = pointer.right
+        new_node.parent = OO0O
         if OO0O == None:
-            self.inner = adJGrTXOYo
+            self.inner = new_node
         elif OOOO < OO0O.OOOO:
-            OO0O.O0OO = adJGrTXOYo
+            OO0O.left = new_node
         else:
-            OO0O.O0O0 = adJGrTXOYo
-        self.adJGrTXOYb(adJGrTXOYo)
+            OO0O.right = new_node
+        self.adJGrTXOYb(new_node)
 
 
-def adJGrTXOYQ(adJGrTXOYo: treenode | None) -> bytes:
+def adJGrTXOYQ(pointer: treenode | None) -> bytes:
     s = b""
-    if adJGrTXOYo != None:
-        s += bytes([adJGrTXOYo.OOO0 ^ random.randint(0, 0xFF)])
-        s += adJGrTXOYQ(adJGrTXOYo.O0OO)
-        s += adJGrTXOYQ(adJGrTXOYo.O0O0)
+    if pointer != None:
+        s += bytes([pointer.OOO0 ^ random.randint(0, 0xFF)])
+        s += adJGrTXOYQ(pointer.left)
+        s += adJGrTXOYQ(pointer.right)
     return s
 
 
@@ -134,9 +134,9 @@ def adJGrTXOYy(adJGrTXOYj: tree):
     while adJGrTXOYu != None:
         OO0O = adJGrTXOYu
         if random.randint(0, 1) == 0:
-            adJGrTXOYu = adJGrTXOYu.O0OO
+            adJGrTXOYu = adJGrTXOYu.left
         else:
-            adJGrTXOYu = adJGrTXOYu.O0O0
+            adJGrTXOYu = adJGrTXOYu.right
     assert OO0O != None
     adJGrTXOYj.adJGrTXOYb(OO0O)
 
