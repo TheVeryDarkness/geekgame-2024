@@ -4,25 +4,26 @@ import base64
 
 # flag1 = "flag{you_Ar3_tHE_MaSTer_OF_PY7h0n}"
 
+i = 0
 
 @dataclass
 class treenode:
-    OOOO: float
-    OOO0: int
+    value: float
+    char: int
     parent: "treenode | None"
     left: "treenode | None"
     right: "treenode | None"
-    def __init__(self, OOOO: float, OOO0: int):
-        self.OOOO = OOOO
-        self.OOO0 = OOO0
+    def __init__(self, value: float, char: int):
+        self.value = value
+        self.char = char
         self.parent = None
         self.left = None
         self.right = None
-    def record(self, pool: dict[int, tuple[float, int, int, int]]):
-        if self.OOO0 in pool:
+    def record(self, pool: dict[int, tuple[float, int, int, int]]) -> None | dict[int, tuple[float, int, int, int]]:
+        if self.char in pool:
             return
         # assert self.OO0O == self, (self.OO0O, self)
-        pool[self.OOO0] = (self.OOOO, self.parent.OOO0 if self.parent else -1, self.left.OOO0 if self.left else -1, self.right.OOO0 if self.right else -1)
+        pool[self.char] = (self.value, self.parent.char if self.parent else -1, self.left.char if self.left else -1, self.right.char if self.right else -1)
         if self.parent:
             self.parent.record(pool)
         if self.left:
@@ -30,6 +31,16 @@ class treenode:
         if self.right:
             self.right.record(pool)
         return pool
+    def show_mermaid(self, pool: dict[int, tuple[float, int, int, int]]) -> None:
+        global i
+        with open(f"data/{i}.txt", "w") as f:
+            f.write("graph TD;\n")
+            for k, v in pool.items():
+                f.write(f"    {k}(\"{v[0]}\")\n")
+                # f.write(f"    {k}({chr(k)}) --> {v[1]}({chr(v[1])})\n")
+                f.write(f"    {k} --\"left\"{'-'*4 if v[2] == -1 else ''}--> {v[2]}\n")
+                f.write(f"    {k} --\"right\"{'-'*4 if v[2] == -1 else ''}--> {v[3]}\n")
+        i += 1
 
 
 @dataclass
@@ -99,52 +110,55 @@ class tree:
         y.right = x
         x.parent = y
 
-    def adJGrTXOYx(self, OOOO: float, OOO0: int):
-        new_node = treenode(OOOO, OOO0)
+    def adJGrTXOYx(self, value: float, char: int):
+        new_node = treenode(value, char)
         pointer = self.inner
-        OO0O = None
+        parent_of_pointer = None
         while pointer != None:
-            OO0O = pointer
-            if OOOO < pointer.OOOO:
+            parent_of_pointer = pointer
+            if value < pointer.value:
                 pointer = pointer.left
             else:
                 pointer = pointer.right
-        new_node.parent = OO0O
-        if OO0O == None:
+        new_node.parent = parent_of_pointer
+        if parent_of_pointer == None:
             self.inner = new_node
-        elif OOOO < OO0O.OOOO:
-            OO0O.left = new_node
+        elif value < parent_of_pointer.value:
+            parent_of_pointer.left = new_node
         else:
-            OO0O.right = new_node
+            parent_of_pointer.right = new_node
         self.adJGrTXOYb(new_node)
 
 
 def adJGrTXOYQ(pointer: treenode | None) -> bytes:
     s = b""
     if pointer != None:
-        s += bytes([pointer.OOO0 ^ random.randint(0, 0xFF)])
+        s += bytes([pointer.char ^ random.randint(0, 0xFF)])
         s += adJGrTXOYQ(pointer.left)
         s += adJGrTXOYQ(pointer.right)
     return s
 
 
-def adJGrTXOYy(adJGrTXOYj: tree):
-    adJGrTXOYu = adJGrTXOYj.inner
+def adJGrTXOYy(root: tree):
+    pointer = root.inner
     OO0O = None
-    while adJGrTXOYu != None:
-        OO0O = adJGrTXOYu
+    while pointer != None:
+        OO0O = pointer
         if random.randint(0, 1) == 0:
-            adJGrTXOYu = adJGrTXOYu.left
+            pointer = pointer.left
         else:
-            adJGrTXOYu = adJGrTXOYu.right
+            pointer = pointer.right
     assert OO0O != None
-    adJGrTXOYj.adJGrTXOYb(OO0O)
+    root.adJGrTXOYb(OO0O)
 
 
 def main():
     root = tree()
 
-    flag = "flag{you_Ar3_tHE_MaSTer_OF_PY7h0n!!}"
+    # flag = "flag{you_Ar3_tHE_MaSTer_OF_PY7h0n!!}"
+    flag = "flag{ABCDEFGHIJKLMNOPQRSTUVWXYZ1234}"
+    assert len(set(flag)) == 36
+    # flag = "flag{ffffffffffffffffffffffffffffff}"
     # flag = input("Please enter the flag: ")
 
     if len(flag) != 36:
@@ -159,14 +173,22 @@ def main():
         root.adJGrTXOYx(random.random(), ord(c))
 
         assert root.inner != None
-        print(root.inner.record({}))
+        r = root.inner.record({})
+        assert r != None
+        print(len(r), r)
+
+        root.inner.show_mermaid(r)
 
     print("Start to delete the tree...")
     for _ in range(0x100):
         adJGrTXOYy(root)
 
         assert root.inner != None
-        print(root.inner.record({}))
+        r = root.inner.record({})
+        assert r != None
+        print(len(r), r)
+
+        root.inner.show_mermaid(r)
 
     assert root.inner != None
     adJGrTXOYi = adJGrTXOYQ(root.inner)
