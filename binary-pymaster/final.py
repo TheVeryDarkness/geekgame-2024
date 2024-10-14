@@ -18,6 +18,18 @@ class treenode:
         self.OO0O = None
         self.O0OO = None
         self.O0O0 = None
+    def record(self, pool: dict[int, tuple[float, int, int, int]]):
+        if self.OOO0 in pool:
+            return
+        # assert self.OO0O == self, (self.OO0O, self)
+        pool[self.OOO0] = (self.OOOO, self.OO0O.OOO0 if self.OO0O else -1, self.O0OO.OOO0 if self.O0OO else -1, self.O0O0.OOO0 if self.O0O0 else -1)
+        if self.OO0O:
+            self.OO0O.record(pool)
+        if self.O0OO:
+            self.O0OO.record(pool)
+        if self.O0O0:
+            self.O0O0.record(pool)
+        return pool
 
 
 @dataclass
@@ -129,10 +141,11 @@ def adJGrTXOYy(adJGrTXOYj: tree):
     adJGrTXOYj.adJGrTXOYb(OO0O)
 
 
-def adJGrTXOYD():
+def main():
     root = tree()
 
-    flag = input("Please enter the flag: ")
+    flag = "flag{you_Ar3_tHE_MaSTer_OF_PY7h0n!!}"
+    # flag = input("Please enter the flag: ")
 
     if len(flag) != 36:
         print("Try again!")
@@ -140,16 +153,20 @@ def adJGrTXOYD():
     if flag[:5] != "flag{" or flag[-1] != "}":
         print("Try again!")
         return
-
+    
+    print("Start to build the tree...")
     for c in flag:
         root.adJGrTXOYx(random.random(), ord(c))
 
-        print(root)
+        assert root.inner != None
+        print(root.inner.record({}))
 
+    print("Start to delete the tree...")
     for _ in range(0x100):
         adJGrTXOYy(root)
 
-        # print(root)
+        assert root.inner != None
+        print(root.inner.record({}))
 
     assert root.inner != None
     adJGrTXOYi = adJGrTXOYQ(root.inner)
@@ -161,5 +178,5 @@ def adJGrTXOYD():
 
 
 if __name__ == "__main__":
-    adJGrTXOYD()
+    main()
 
