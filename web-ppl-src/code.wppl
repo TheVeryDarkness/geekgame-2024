@@ -1,0 +1,3 @@
+for (const p in this) console.log(p);
+
+1

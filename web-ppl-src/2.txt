@@ -1,0 +1,1 @@
+"// let globalStore = document; console.log(globalStore.title = 1); console.trace(); nativeConsole.clear(); nativeConsole.log($.globalEval("for(const p in window){nativeConsole.log(p); nativeConsole.log(window[p])}")); nativeConsole.log($.globalEval("nativeConsole.log(document.getElementsByTagName('textarea')[1])")); 1 "@1460187
