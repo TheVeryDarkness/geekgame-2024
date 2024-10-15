@@ -4,3 +4,12 @@
 [submodule "gs-frontend"]
 	path = gs-frontend
 	url = https://github.com/PKU-GeekGame/gs-frontend
+[submodule "pyinstxtractor"]
+	path = pyinstxtractor
+	url = https://github.com/extremecoders-re/pyinstxtractor
+[submodule "web-manuallab/datalab"]
+	path = web-manuallab/datalab
+	url = https://github.com/myisabella/datalab
+[submodule "web-manuallab/Autolab"]
+	path = web-manuallab/Autolab
+	url = https://github.com/thezzisu/Autolab/
