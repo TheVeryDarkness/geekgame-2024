@@ -16,3 +16,9 @@
 [submodule "algo-randomzoo/task2/RNGeesus"]
 	path = algo-randomzoo/task2/RNGeesus
 	url = https://github.com/deut-erium/RNGeesus
+[submodule "algo-gzip/pyflate"]
+	path = algo-gzip/pyflate
+	url = https://github.com/vadmium/pyflate
+[submodule "FlagFinder"]
+	path = FlagFinder
+	url = https://github.com/SakuraRabbit18/FlagFinder
