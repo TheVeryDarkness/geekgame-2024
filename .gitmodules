@@ -13,3 +13,6 @@
 [submodule "web-manuallab/Autolab"]
 	path = web-manuallab/Autolab
 	url = https://github.com/thezzisu/Autolab/
+[submodule "algo-randomzoo/task2/RNGeesus"]
+	path = algo-randomzoo/task2/RNGeesus
+	url = https://github.com/deut-erium/RNGeesus
