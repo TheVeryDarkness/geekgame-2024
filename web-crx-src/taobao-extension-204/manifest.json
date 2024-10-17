@@ -1,0 +1,22 @@
+{
+  "description": "购物消息即时抢先看，大屏浏览一键丝滑购物，图片搜索快速找同款，精美壁纸自由随心切换，同款比价、购物返利加速升级中！",
+  "version": "2.0.4",
+  "manifest_version": 3,
+  "name": "淘宝浏览器助手",
+  "background": { "service_worker": "background.bundle.js" },
+  "action": {},
+  "chrome_url_overrides": { "newtab": "newtab.html" },
+  "icons": { "32": "icon-32.png", "128": "icon-128.png" },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "host_permissions": ["https://*/*", "<all_urls>"],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8OVkmLYroxDOIbGSV7lhgqcr7BMTzQ+aZT8EDaBwZ2CRPpeovpyWEqECTqPJrFQrJWns/QfEBIi/i9KxJW+VyhGckfWd5QdLdOnJQIdHcZjAR8j+7I2FlymlHAAbW9nYElayyOi9wnxPQPCQ/HJW239bDnfO6Kz8je4Yhq6QUI3aV2z4yqQ4Qpmwgp9yz7RU46l07td02V3mFa4l1wB1RHSbXrgk4ghGadahkST1N2F9tz6Of1X4Lbjte08rCuvy4AokpeOfOPpIRX+sxHXzNs7ZHywaRG9hgQLfiyXQw9wZEN2RrgFX/5GNF7XM4f7I/fPFveXYE9hpgi+COk65BwIDAQAB",
+  "permissions": ["topSites", "favicon", "storage", "scripting", "activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+      "js": ["contentScript.bundle.js"]
+    }
+  ]
+}

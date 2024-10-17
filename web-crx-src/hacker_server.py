@@ -9,4 +9,5 @@ def blog():
     return HACKER_HTML
     
 def start():
-    app.run(host='127.0.5.14', port=1919)
+    # app.run(host='127.0.5.14', port=1919)
+    app.run(host='127.0.0.1', port=31000)

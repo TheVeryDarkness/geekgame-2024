@@ -1,1 +1,2 @@
-mocked
+*.zip
+__pycache__

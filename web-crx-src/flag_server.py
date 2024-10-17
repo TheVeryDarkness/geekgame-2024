@@ -27,4 +27,5 @@ def read_flag():
         return 'no flag for you'
         
 def start():
-    app.run(host='127.0.1.14', port=1919)
+    # app.run(host='127.0.1.14', port=1919)
+    app.run(host='127.0.0.1', port=30000)
