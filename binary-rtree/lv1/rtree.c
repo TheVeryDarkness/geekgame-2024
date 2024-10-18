@@ -1,5 +1,11 @@
-// 00000000004040A0 __int32 node_tops[20h]
+// 00000000004040A0 __int32 node_tops[0x20]
 // 0000000000404120 __int32 node_cnt
+
+struct Node {
+  int key;
+  char data[8];
+  int size;
+}
 
 int __fastcall print_node(__int64 a1)
 {
@@ -25,7 +31,7 @@ int print_info()
 }
 
 // 1316
-int __fastcall insert(_BYTE a1[512])
+int __fastcall insert(_BYTE a1[0x200])
 {
   int v1; // eax
   int v3; // eax
@@ -88,7 +94,7 @@ int edit()
 int __fastcall main(int argc, const char **argv, const char **envp)
 {
   int option; // [rsp+Ch] [rbp-204h] BYREF
-  _BYTE buffer[512]; // [rsp+10h] [rbp-200h] BYREF
+  _BYTE buffer[0x200]; // [rsp+10h] [rbp-200h] BYREF
 
   init(argc, argv, envp);
   node_cnt = 0;

@@ -13,6 +13,8 @@
  * case it's OK.  
  */
 
+ // https://etaoinwu.com/blog/your-criteria-sucks/
+
 #if 0
 /*
  * Instructions to Students:
@@ -174,7 +176,7 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return 2;
+  return ~ (~ x | ~ y);
 }
 /* 
  * bitConditional - x ? y : z for each bit respectively
@@ -184,7 +186,7 @@ int bitAnd(int x, int y) {
  *   Rating: 1
  */
 int bitConditional(int x, int y, int z) {
-  return 2;
+  return (x & y) | (~x & z);
 }
 /* 
  * implication - return x -> y in propositional logic - 0 for false, 1
@@ -196,7 +198,7 @@ int bitConditional(int x, int y, int z) {
  *   Rating: 2
  */
 int implication(int x, int y) {
-    return 2;
+    return (!x | y);
 }
 /* 
  * rotateRight - Rotate x to the right by n
@@ -207,7 +209,9 @@ int implication(int x, int y) {
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
-  return 2;
+  // First (32 - n) bits to last (32 - n) bits
+  // return ((x << (n ^ 31)) << 1) | ((x >> n) & (((~0) >> (n ^ 31)) >> 1));
+  return ((x >> n) & ~((~0) << (31 ^ n) << 1)) | (x << (n ^ 31) << 1);
 }
 /* 
  * bang - Compute !x without using !
@@ -217,7 +221,14 @@ int rotateRight(int x, int n) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+  // A better solution here.
+  // https://github.com/Betamm/CSAPP/blob/master/Notes/1DataLAB/1DataLAB.md
+  int x16 = (x >> 16) | x;
+  int x8 = (x16 >> 8) | x16;
+  int x4 = (x8 >> 4) | x8;
+  int x2 = (x4 >> 2) | x4;
+  int x1 = (x2 >> 1) | x2;
+  return (x1 & 1) ^ 1;
 }
 /* 
  * countTrailingZero - return the number of consecutive 0 from the lowest bit of 
@@ -233,7 +244,14 @@ int bang(int x) {
  *   Rating: 4
  */
 int countTrailingZero(int x){
-    return 2;
+    // https://www.cnblogs.com/frank3215/p/ics-datalab.html
+    int ans = (!(x&0x0000FFFF))<<4;
+    ans += (!(x&(0x000000FF<<ans)))<<3;
+    ans += (!(x&(0x0000000F<<ans)))<<2;
+    ans += (!(x&(0x00000003<<ans)))<<1;
+    ans += (!(x&(0x00000001<<ans)));
+    ans += (!(x&(0x00000001<<ans)));
+    return ans;
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -244,7 +262,11 @@ int countTrailingZero(int x){
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+    // From https://github.com/Betamm/CSAPP/blob/master/Notes/1DataLAB/1DataLAB.md
+  	int signmask = x >> 31;
+    int mask = (1 << n) + (~1) + 1; // 取高位为0，低n位为1   (1<<n)-1
+    return (x >> n) + (signmask & !!(x & mask));
+    // return (x >> n) & ~(~0 << (31 ^ n) << 1);
 }
 /* 
  * sameSign - return 1 if x and y have same sign, and 0 otherwise
@@ -254,7 +276,7 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int sameSign(int x, int y) {
-  return 2;
+  return (((x ^ y) >> 31) & 1) ^ 1;
 }
 /*
  * multFiveEighths - multiplies by 5/8 rounding toward 0.
@@ -268,7 +290,10 @@ int sameSign(int x, int y) {
  *   Rating: 3
  */
 int multFiveEighths(int x) {
-  return 2;
+    // return (x << 2 + x) >> 3;
+    //https://blog.csdn.net/weixin_42062229/article/details/93496909
+    x = x + (x<<2);
+    return (x+(x>>31&7))>>3;
 }
 /*
  * satMul3 - multiplies by 3, saturating to Tmin or Tmax if overflow
@@ -282,7 +307,11 @@ int multFiveEighths(int x) {
  *  Rating: 3
  */
 int satMul3(int x) {
-    return 2;
+    // https://www.cnblogs.com/frank3215/p/ics-datalab.html
+    int xx = x+x;
+    int xxx = xx+x;
+    int of = ((x^xx)|(x^xxx))>>31;
+    return (of | xxx) ^ (of & ((x>>31) ^ (1<<31)));
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -292,7 +321,12 @@ int satMul3(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  // https://github.com/Betamm/CSAPP/blob/master/Notes/1DataLAB/1DataLAB.md
+	int signx = (x >> 31) & 1;
+	int signy = (y >> 31) & 1;
+	int sign1 = signx & (!signy);
+	int sign2 = (!(signx ^ signy)) & (((x + (~y)) >> 31) & 1);	// 此处 x<=y, 即 x-y<=0, return 1. 等价为 x-y-1<0, return 1. 进而可直接判断符号位返回。
+	return sign1 | sign2;
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -302,7 +336,13 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int ilog2(int x) {
-  return 2;
+  // https://github.com/Betamm/CSAPP/blob/master/Notes/1DataLAB/1DataLAB.md
+	int bitNum = (!!(x >> 16)) << 4;
+	bitNum = bitNum + ((!!(x >> (bitNum + 8))) << 3);
+	bitNum = bitNum + ((!!(x >> (bitNum + 4))) << 2);
+	bitNum = bitNum + ((!!(x >> (bitNum + 2))) << 1);
+	bitNum = bitNum + (!!(x >> (bitNum + 1)));
+	return bitNum;
 }
 /* 
  * float_twice - Return bit-level equivalent of expression 2*f for

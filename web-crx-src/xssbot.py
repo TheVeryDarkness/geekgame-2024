@@ -69,7 +69,12 @@ try:
         title = driver.title or '(empty)'
         print('\nThe page title is:', title)
 
+        driver.start_devtools()
+
         input('\nPress Enter to close the browser...')
+
+        for entry in driver.get_log('browser'):
+            print(entry)
 
     print('\nSee you later :)')
     

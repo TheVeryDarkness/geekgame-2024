@@ -1,0 +1,16 @@
+{
+  "name": "web-ppl-src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "webppl code.wppl --compile --out code.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "webppl": "^0.9.15"
+  }
+}

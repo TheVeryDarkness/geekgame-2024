@@ -1,4 +1,11 @@
-(function (_globalCurrentAddress) {
+var webppl = require("/Users/huangboyi/ctf/2024/web-ppl-src/node_modules/.pnpm/webppl@0.9.15/node_modules/webppl/src/main.js");
+var args = require("/Users/huangboyi/ctf/2024/web-ppl-src/node_modules/.pnpm/webppl@0.9.15/node_modules/webppl/src/args.js");
+args.makeGlobal(__filename, process.argv.slice(2));
+var __runner__ = util.trampolineRunners.cli();
+function topK(s, x) {
+  console.log(x);
+};
+var main = (function (_globalCurrentAddress) {
     return function (p) {
         return function (runTrampoline) {
             return function (s, k, a) {
@@ -8,6 +15,8 @@
             };
         };
     }(function (globalStore, _k0, _address0) {
+        var _currentAddress = _address0;
+        _addr.save(_globalCurrentAddress, _address0);
         var Bernoulli = dists.makeBernoulli;
         var Beta = dists.makeBeta;
         var Binomial = dists.makeBinomial;
@@ -39,8 +48,12 @@
         var TensorLaplace = dists.makeTensorLaplace;
         var Uniform = dists.makeUniform;
         var constF = function constF(globalStore, _k277, _address47, f) {
+            var _currentAddress = _address47;
+            _addr.save(_globalCurrentAddress, _address47);
             return function () {
                 return _k277(globalStore, function (globalStore, _k278, _address48) {
+                    var _currentAddress = _address48;
+                    _addr.save(_globalCurrentAddress, _address48);
                     return function () {
                         return _k278(globalStore, f);
                     };
@@ -48,18 +61,25 @@
             };
         };
         var error = function error(globalStore, _k150, _address122, msg) {
+            var _currentAddress = _address122;
+            _addr.save(_globalCurrentAddress, _address122);
             return function () {
                 return _k150(globalStore, util.error(msg));
             };
         };
         var SampleGuide = function SampleGuide(globalStore, _k146, _address126, wpplFn, options) {
+            var _currentAddress = _address126;
+            _addr.save(_globalCurrentAddress, _address126);
             return function () {
                 return ForwardSample(globalStore, _k146, _address126.concat('_156'), wpplFn, _.assign({ guide: !0 }, _.omit(options, 'guide')));
             };
         };
         var OptimizeThenSample = function OptimizeThenSample(globalStore, _k144, _address127, wpplFn, options) {
+            var _currentAddress = _address127;
+            _addr.save(_globalCurrentAddress, _address127);
             return function () {
                 return Optimize(globalStore, function (globalStore, _dummy145) {
+                    _addr.save(_globalCurrentAddress, _currentAddress);
                     var opts = _.pick(options, 'samples', 'onlyMAP', 'callbacks', 'verbose');
                     return function () {
                         return SampleGuide(globalStore, _k144, _address127.concat('_158'), wpplFn, opts);
@@ -68,12 +88,17 @@
             };
         };
         var AISforInfer = function AISforInfer(globalStore, _k140, _address128, wpplFn, options) {
+            var _currentAddress = _address128;
+            _addr.save(_globalCurrentAddress, _address128);
             return function () {
                 return constF(globalStore, function (globalStore, _result143) {
+                    _addr.save(_globalCurrentAddress, _currentAddress);
                     return function () {
                         return Infer(globalStore, function (globalStore, dummyMarginal) {
+                            _addr.save(_globalCurrentAddress, _currentAddress);
                             return function () {
                                 return AIS(globalStore, function (globalStore, _result142) {
+                                    _addr.save(_globalCurrentAddress, _currentAddress);
                                     var _dummy141 = _.assign(dummyMarginal, { normalizationConstant: _result142 });
                                     return function () {
                                         return _k140(globalStore, dummyMarginal);
@@ -86,21 +111,29 @@
             };
         };
         var DefaultInfer = function DefaultInfer(globalStore, _k130, _address129, wpplFn, options) {
+            var _currentAddress = _address129;
+            _addr.save(_globalCurrentAddress, _address129);
             var _dummy139 = util.mergeDefaults(options, {}, 'Infer');
             var maxEnumTreeSize = 200000;
             var minSampleRate = 250;
             var samples = 1000;
             return function () {
                 return Enumerate(globalStore, function (globalStore, enumResult) {
+                    _addr.save(_globalCurrentAddress, _currentAddress);
                     var _k138 = function (globalStore, _dummy137) {
+                        _addr.save(_globalCurrentAddress, _currentAddress);
                         var _dummy136 = console.log('Using "rejection"');
                         return function () {
                             return Rejection(globalStore, function (globalStore, rejResult) {
+                                _addr.save(_globalCurrentAddress, _currentAddress);
                                 return function () {
                                     return rejResult instanceof Error ? function (globalStore, _dummy135) {
+                                        _addr.save(_globalCurrentAddress, _currentAddress);
                                         return function () {
                                             return CheckSampleAfterFactor(globalStore, function (globalStore, hasSampleAfterFactor) {
+                                                _addr.save(_globalCurrentAddress, _currentAddress);
                                                 var _k133 = function (globalStore, _dummy132) {
+                                                    _addr.save(_globalCurrentAddress, _currentAddress);
                                                     var _dummy131 = console.log('Using "MCMC"');
                                                     return function () {
                                                         return MCMC(globalStore, _k130, _address129.concat('_168'), wpplFn, { samples: samples });
@@ -108,8 +141,10 @@
                                                 };
                                                 return function () {
                                                     return hasSampleAfterFactor ? function (globalStore, _dummy134) {
+                                                        _addr.save(_globalCurrentAddress, _currentAddress);
                                                         return function () {
                                                             return SMC(globalStore, function (globalStore, smcResult) {
+                                                                _addr.save(_globalCurrentAddress, _currentAddress);
                                                                 return function () {
                                                                     return dists.isDist(smcResult) ? _k130(globalStore, smcResult) : smcResult instanceof Error ? _k133(globalStore, console.log(ad.scalar.add(smcResult.message, '..quit SMC'))) : error(globalStore, _k133, _address129.concat('_167'), 'Invalid return value from SMC');
                                                                 };
@@ -143,8 +178,12 @@
             };
         };
         var Infer = function Infer(globalStore, _k123, _address130, options, maybeFn) {
+            var _currentAddress = _address130;
+            _addr.save(_globalCurrentAddress, _address130);
             var _k129 = function (globalStore, wpplFn) {
+                _addr.save(_globalCurrentAddress, _currentAddress);
                 var _k128 = function (globalStore, _dummy127) {
+                    _addr.save(_globalCurrentAddress, _currentAddress);
                     var methodMap = {
                         SMC: SMC,
                         MCMC: MCMC,
@@ -159,7 +198,9 @@
                         defaultInfer: DefaultInfer
                     };
                     var _k126 = function (globalStore, methodName) {
+                        _addr.save(_globalCurrentAddress, _currentAddress);
                         var _k125 = function (globalStore, _dummy124) {
+                            _addr.save(_globalCurrentAddress, _currentAddress);
                             var method = methodMap[methodName];
                             return function () {
                                 return method(globalStore, _k123, _address130.concat('_172'), wpplFn, _.omit(options, 'method', 'model'));
@@ -167,6 +208,7 @@
                         };
                         return function () {
                             return _.has(methodMap, methodName) ? _k125(globalStore, undefined) : function (globalStore, methodNames) {
+                                _addr.save(_globalCurrentAddress, _currentAddress);
                                 var msg = ad.scalar.add(ad.scalar.add(ad.scalar.add(ad.scalar.add('Infer: \'', methodName), '\' is not a valid method. The following methods are available: '), methodNames.join(', ')), '.');
                                 return function () {
                                     return error(globalStore, _k125, _address130.concat('_171'), msg);
@@ -187,7 +229,9 @@
             };
         };
         return function () {
-            return _k0(globalStore, nativeConsole.log(1));
+            return _k0(globalStore, __runner__);
         };
     });
 });
+
+webppl.runEvaled(main, __runner__, {}, {}, topK, '');
