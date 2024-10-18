@@ -13,6 +13,6 @@ python3.8 ../pyinstxtractor/pyinstxtractor.py ./pymaster
 # [+] Possible entry point: pymaster.pyc
 # [+] Found 205 files in PYZ archive
 # [+] Successfully extracted pyinstaller archive: ./pymaster
-# 
+#
 # You can now use a python decompiler on the pyc files within the extracted directory
 
