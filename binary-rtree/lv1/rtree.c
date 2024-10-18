@@ -1,34 +1,62 @@
-int __fastcall insert(__int64 a1)
+// 00000000004040A0 __int32 node_tops[20h]
+// 0000000000404120 __int32 node_cnt
+
+int __fastcall print_node(__int64 a1)
+{
+  printf("key: %d\n", *(_DWORD *)a1);
+  printf("size: %d\n", *(_DWORD *)(a1 + 16));
+  return printf("data: %s\n", *(const char **)(a1 + 8));
+}
+
+// 122c
+int backdoor()
+{
+  puts("congratulations! you reach the backdoor!");
+  return system("/bin/sh");
+}
+
+int print_info()
+{
+  puts("1. insert a node");
+  puts("2. show a node");
+  puts("3. edit a node");
+  puts("4. quit");
+  return puts(">> ");
+}
+
+// 1316
+int __fastcall insert(_BYTE a1[512])
 {
   int v1; // eax
   int v3; // eax
-  int v4; // [rsp+18h] [rbp-18h] BYREF
-  int v5; // [rsp+1Ch] [rbp-14h] BYREF
+  int size; // [rsp+18h] [rbp-18h] BYREF
+  int key; // [rsp+1Ch] [rbp-14h] BYREF
   __int64 v6; // [rsp+20h] [rbp-10h]
   int v7; // [rsp+2Ch] [rbp-4h]
 
   puts("please enter the node key:");
-  __isoc99_scanf("%d", &v5);
+  __isoc99_scanf("%d", &key);
   puts("please enter the size of the data:");
-  __isoc99_scanf("%d", &v4);
+  __isoc99_scanf("%d", &size);
   if ( node_cnt )
     v1 = node_tops[node_cnt - 1];
   else
     v1 = 0;
   v7 = v1;
-  if ( (unsigned __int64)(v4 + v1 + 24LL) > 0x200 )
+  if ( (unsigned __int64)(size + v1 + 24LL) > 0x200 )
     return puts("no enough space");
   v3 = node_cnt++;
-  node_tops[v3] = v4 + v7 + 24;
-  v6 = v7 + a1;
-  *(_DWORD *)v6 = v5;
-  *(_DWORD *)(v6 + 16) = v4 + 24;
+  node_tops[v3] = size + v7 + 24;
+  v6 = a1 + v7;
+  *(_DWORD *)v6 = key;
+  *(_DWORD *)(v6 + 16) = size + 24;
   *(_QWORD *)(v6 + 8) = v6 + 24;
   puts("please enter the data:");
   read(0, *(void **)(v6 + 8), *(unsigned int *)(v6 + 16));
   return puts("insert success!");
 }
 
+// 147f
 __int64 __fastcall show(__int64 a1)
 {
   __int64 result; // rax
@@ -59,31 +87,31 @@ int edit()
 
 int __fastcall main(int argc, const char **argv, const char **envp)
 {
-  int v4; // [rsp+Ch] [rbp-204h] BYREF
-  _BYTE v5[512]; // [rsp+10h] [rbp-200h] BYREF
+  int option; // [rsp+Ch] [rbp-204h] BYREF
+  _BYTE buffer[512]; // [rsp+10h] [rbp-200h] BYREF
 
   init(argc, argv, envp);
   node_cnt = 0;
   do
   {
     print_info();
-    __isoc99_scanf("%d", &v4);
-    if ( v4 == 3 )
+    __isoc99_scanf("%d", &option);
+    if ( option == 3 )
     {
       edit();
     }
-    else if ( v4 <= 3 )
+    else if ( option <= 3 )
     {
-      if ( v4 == 1 )
+      if ( option == 1 )
       {
-        insert(v5);
+        insert(buffer);
       }
-      else if ( v4 == 2 )
+      else if ( option == 2 )
       {
-        show(v5);
+        show(buffer);
       }
     }
   }
-  while ( v4 != 4 );
+  while ( option != 4 );
   return 0;
 }
