@@ -11,6 +11,7 @@ int backdoor()
 {
   return system("echo 'this is a fake backdoor'");
 }
+// 4012a4
 unsigned __int64 __fastcall edit(__int64 a1, int a2)
 {
   int v3; // [rsp+14h] [rbp-Ch] BYREF
@@ -46,6 +47,14 @@ int print_info()
   puts("4. quit");
   return puts(">> ");
 }
+struct Node2
+{
+  int key;
+  char *data;
+  int size;
+  (__int64 (*edit)(unsigned __int64, int))edit;
+  struct Node2 *next;
+};
 int __fastcall main(int argc, const char **argv, const char **envp)
 {
   int v4; // [rsp+0h] [rbp-30h] BYREF
