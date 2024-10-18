@@ -2,9 +2,9 @@
 // 0000000000404120 __int32 node_cnt
 
 struct Node {
-  int key;
+  __int64 key;
   char data[8];
-  int size;
+  __int64 size;
 }
 
 int __fastcall print_node(__int64 a1)

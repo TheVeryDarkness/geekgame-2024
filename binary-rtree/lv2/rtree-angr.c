@@ -161,38 +161,39 @@ long long backdoor()
     return system("echo 'this is a fake backdoor'");
 }
 
-long long edit(unsigned long a0, unsigned int a1)
+long long edit(__int64 key, __int64 size1, __int64 size2, long long (*edit)(unsigned long long, unsigned int, unsigned int, unsigned long long))
 {
-    char v0;  // [bp-0x14]
+    __int32 index;  // [bp-0x14]
     unsigned long v1;  // [sp-0x10]
     unsigned long long *v3;  // fs
 
     puts("sry, but you can only edit 8 bytes at a time");
     puts("please enter the index of the data you want to edit:");
-    __isoc99_scanf("%d", &v0);
-    if (a1 <= *((int *)&v0))
+    __isoc99_scanf("%d", &index);
+    if (a1 <= (int)index)
     {
         puts("invalid index");
     }
     else
     {
         puts("please enter the new data:");
-        read(0, a0 + *((int *)&v0), 8);
+        read(0, a0 + index, 8);
         puts("edit success!");
     }
     return v1 - v3[5];
 }
 
 typedef struct struct_0 {
-    unsigned int field_0;
-    char padding_4[4];
-    unsigned long long field_8;
-    unsigned int field_10;
+    __int64 key; // 0x0
+    __int64 field_8; // pointer to data
+    __int64 field_10; // size
+    long long (*edit)(unsigned long long, unsigned int, unsigned int, unsigned long long); // 0x18
+    struct_0 *next; // 0x20
 } struct_0;
 
 void print_node(struct_0 *a0)
 {
-    printf("key: %d\n", a0->field_0);
+    printf("key: %d\n", a0->key);
     printf("size: %d\n", a0->field_10);
     printf("data: %s\n", a0->field_8);
     return;
@@ -208,16 +209,16 @@ void print_info()
     return;
 }
 
-extern char root;
+struct_0 *root;
 
 int main()
 {
-    char v0;  // [bp-0x38]
-    char v1;  // [bp-0x34]
-    unsigned long v2;  // [sp-0x30]
+    __int32 option;  // [bp-0x38]
+    __int32 key;  // [bp-0x34]
+    struct_0 *v2;  // [sp-0x30]
     unsigned long v3;  // [sp-0x28]
     unsigned long v4;  // [sp-0x20]
-    unsigned long v5;  // [sp-0x18]
+    struct_0 *v5;      // [sp-0x18]
     unsigned long v6;  // [sp-0x10]
     unsigned long v8;  // fs
 
@@ -232,21 +233,21 @@ int main()
                 while (true)
                 {
                     print_info();
-                    __isoc99_scanf("%d", &v0);
-                    if (*((int *)&v0) != 1)
+                    __isoc99_scanf("%d", &option);
+                    if (option != 1)
                         break;
                     v5 = malloc(40);
                     puts("please enter the node key:");
                     __isoc99_scanf("%d", v5);
                     puts("please enter the size of the data:");
                     __isoc99_scanf("%d", v5 + 16);
-                    if (*((int *)(v5 + 16)) <= 8)
+                    if (v5->size <= 8)
                         puts("sry, but plz enter a bigger size");
-                    *((void* *)(v5 + 8)) = malloc(*((int *)(v5 + 16)));
+                    v5->data = malloc((int)v5->size);
                     puts("please enter the data:");
-                    read(0, *((long long *)(v5 + 8)), *((int *)(v5 + 16)));
-                    *((void* *)(v5 + 24)) = edit;
-                    *((long long *)(v5 + 32)) = 0;
+                    read(0, v5->data, v5->size);
+                    v5->edit = edit;
+                    v5->next = 0;
                     puts("insert success!");
                     if (!root)
                     {
@@ -254,17 +255,17 @@ int main()
                     }
                     else
                     {
-                        for (v2 = root; *((long long *)(v2 + 32)); v2 = *((long long *)(v2 + 32)));
-                        *((unsigned long *)(v2 + 32)) = v5;
+                        for (v2 = root; v2->next; v2 = v2->next);
+                        v2->next = v5;
                     }
                 }
-                if (*((int *)&v0) != 2)
+                if (option != 2)
                     break;
                 puts("please enter the key of the node you want to show:");
-                __isoc99_scanf("%d", &v1);
-                for (v3 = root; v3; v3 = *((long long *)(v3 + 32)))
+                __isoc99_scanf("%d", &key);
+                for (v3 = root; v3; v3 = v3->next)
                 {
-                    if (*((int *)v3) == *((int *)&v1))
+                    if ((int)v3->key == key)
                     {
                         print_node(v3);
                         break;
@@ -273,18 +274,20 @@ int main()
                 if (!v3)
                     puts("node not found :(");
             }
-            if (*((int *)&v0) != 3)
+            if (option != 3)
                 break;
             puts("please enter the key of the node you want to edit:");
-            __isoc99_scanf("%d", &v1);
-            for (v4 = root; v4; v4 = *((long long *)(v4 + 32)))
+            __isoc99_scanf("%d", &key);
+            for (v4 = root; v4; v4 = v4->next)
             {
-                if (*((int *)v4) == *((int *)&v1))
+                if (v4->key == key)
                 {
-                    if (*((long long *)(v4 + 24)))
+                    if (v4->edit)
                     {
-                        *((long long *)(v4 + 24))(*((long long *)(v4 + 8)), *((int *)(v4 + 16)), *((int *)(v4 + 16)), *((long long *)(v4 + 24)));
-                        *((long long *)(v4 + 24)) = 0;
+                        // Will not pass the this pointer implicitly
+                        v4->edit(v4->data, (int)v4->size, (int)v4->size, v4->next);
+                        // Set to 0 to prevent re-edit
+                        v4->edit = 0;
                     }
                     break;
                 }
@@ -292,7 +295,7 @@ int main()
             if (!v4)
                 puts("node not found");
         }
-        if (*((int *)&v0) == 4)
+        if (option == 4)
             break;
         puts("invalid choice");
     }

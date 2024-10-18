@@ -20,38 +20,13 @@ def seed_arr_len(arr):
         )
     return mode(mode_vals)
 
-def all_smt(s, initial_terms):
-    """
-    yielding all satisfying models over `initial_terms` on a 
-    z3.Solver() instance `s` containing constraints
-    """
-    def block_term(s, m, t):
-        s.add(t != m.eval(t))
-
-    def fix_term(s, m, t):
-        s.add(t == m.eval(t))
-
-    def all_smt_rec(terms):
-        if sat == s.check():
-            m = s.model()
-            yield m
-            for i in range(len(terms)):
-                s.push()
-                block_term(s, m, terms[i])
-                for j in range(i):
-                    fix_term(s, m, terms[j])
-                for m in all_smt_rec(terms[i:]):
-                    yield m
-                s.pop()
-    for m in all_smt_rec(list(initial_terms)):
-        yield m
-
 
 class MT19937:
     """
     Standard MT19937 instance for both 32 bit and 64 bit variants
     """
-    def __init__(self, c_seed=0, bit_64=False):
+    MT: list[int]
+    def __init__(self, c_seed: int = 0, bit_64=False):
         """
         initialize the mersenne twister with `c_seed`
         `bit_64` if True, would initialize the 64 variant of MT19937
@@ -80,7 +55,7 @@ class MT19937:
         self.upper_mask = (1 << self.r)  # 0x80000000
         self.seed_mt(c_seed)
 
-    def seed_mt(self, num):
+    def seed_mt(self, num: int):
         """initialize the generator from a seed"""
         self.MT[0] = num
         self.index = self.n
@@ -122,102 +97,6 @@ class MT19937:
         return (3, tuple(self.MT + [self.index]), None)
 
 
-class MTpython(MT19937):
-    """
-    Additional functionality offered by MT of python3, namely 
-    better (non linear) initialization 
-    """
-    def __init__(self, seed=0):
-        MT19937.__init__(self, 0)
-        self.seed(seed) #python seed initialization
-
-    def init_by_array(self, init_key):
-        """
-        Initialization with an `init_key` array of 32-bit words for
-        better randomization properties
-        """
-        self.seed_mt(19650218)
-        i, j = 1, 0
-        for k in range(max(self.n, len(init_key))):
-            self.MT[i] = (self.MT[i] ^ (
-                (self.MT[i - 1] ^ (self.MT[i - 1] >> 30)) * 1664525)) + init_key[j] + j
-            self.MT[i] &= 0xffffffff
-            i += 1
-            j += 1
-            if i >= self.n:
-                self.MT[0] = self.MT[self.n - 1]
-                i = 1
-            if j >= len(init_key):
-                j = 0
-        for k in range(self.n - 1):
-            self.MT[i] = (self.MT[i] ^ (
-                (self.MT[i - 1] ^ (self.MT[i - 1] >> 30)) * 1566083941)) - i
-            self.MT[i] &= 0xffffffff
-            i += 1
-            if i >= self.n:
-                self.MT[0] = self.MT[self.n - 1]
-                i = 1
-        self.MT[0] = 0x80000000
-
-    def init_32bit_seed(self, seed_32):
-        """
-        Just an oversimplification of `init_by_array` for single element array
-        of upto 32 bit number
-        """
-        self.seed_mt(19650218)
-        i = 1
-        for k in range(self.n):
-            self.MT[i] = (self.MT[i] ^ (
-                (self.MT[i - 1] ^ (self.MT[i - 1] >> 30)) * 1664525)) + seed_32
-            self.MT[i] &= 0xffffffff
-            i += 1
-            if i >= self.n:
-                self.MT[0] = self.MT[self.n - 1]
-                i = 1
-        for k in range(self.n - 1):
-            self.MT[i] = (self.MT[i] ^ (
-                (self.MT[i - 1] ^ (self.MT[i - 1] >> 30)) * 1566083941)) - i
-            self.MT[i] &= 0xffffffff
-            i += 1
-            if i >= self.n:
-                self.MT[0] = self.MT[self.n - 1]
-                i = 1
-        self.MT[0] = 0x80000000
-
-    def seed(self,seed_int):
-        """
-        Replication of random.seed of cpython when seed is an integer
-        """
-        self.init_by_array(self.int_to_array(seed_int))
-
-    def random(self):
-        """
-        python random.random() call which yeilds a uniformly random
-        floating point between [0,1] employing two MT 32 bits calls
-        """
-        a = self.extract_number()>>5
-        b = self.extract_number()>>6
-        return (a*67108864.0+b)*(1.0/9007199254740992.0)
-
-    def int_to_array(self,k):
-        """
-        converting a big integer to equivalent list of 32-bit integers
-        as would be passed into python seed process
-        """
-        if k==0:
-            return [0]
-        k_byte = int.to_bytes(k,(k.bit_length()+7)//8,'little')
-        k_arr = [k_byte[i:i+4] for i in range(0,len(k_byte),4)]
-        return [int.from_bytes(i,'little') for i in k_arr ]
-
-    def array_to_int(self,arr):
-        """
-        converting list of 32-bit integers back to a big integer
-        """
-        arr_bytes  = b"".join([int.to_bytes(i,4,'little') for i in arr])
-        return int.from_bytes( arr_bytes ,'little')
-
-
 class Breaker():
     """
     Class for breaking and seed recovery of standard mersenne twister
@@ -246,7 +125,7 @@ class Breaker():
         self.lower_mask = (1 << self.r) - 1
         self.upper_mask = (1 << self.r)
 
-    def ut(self, num):
+    def ut(self, num: int):
         """
         untamper a `num` to give back the internal state register
         """
@@ -312,11 +191,10 @@ class Breaker():
         assert len(outputs) == 624, "To clone full state, 624 outputs needed"
         return list(map(self.ut, outputs))
 
-    def get_seed_mt(self, outputs):
+    def get_seed_mt(self, outputs: str) -> int:
         """
         recovering the initializing knowing some `outputs`
-        outputs: list of (output_num, output) pairs 
-        (can recover seed with just three consecutive outputs)
+        outputs: list of bits, given in the order of generation, 0 and 1 for known bits, ? for unknown
         """
         STATE = [BitVec(f'MT[{i}]', self.num_bits) for i in range(self.n + 1)]
         SEED = BitVec('seed', self.num_bits)
@@ -336,6 +214,7 @@ class Breaker():
             return m[m.decls()[0]].as_long()
         else:
             print(time() - t_start)
+            raise Exception("No solution found")
 
     def twist_state(self, MT):
         """
@@ -349,23 +228,6 @@ class Breaker():
             xA = If(x & 1 == 1, xA ^ self.a, xA)
             MT[i] = simplify(MT[(i + self.m) % self.n] ^ xA)
 
-
-    def untwist(self, outputs):
-        """
-        Recover the state post twisting
-        (can get only the MSB of first element of the internal state)
-        """
-        MT = [BitVec(f'MT[{i}]', 32) for i in range(self.n)]
-        self.twist_state(MT)
-        s = Solver()
-        for i in range(len(outputs)):
-            s.add(outputs[i] == MT[i])
-        if s.check() == sat:
-            model = s.model()
-            untwisted = {str(i): model[i].as_long() for i in model.decls()}
-            untwisted = [untwisted[f'MT[{i}]'] for i in range(624)]
-            return untwisted
-        
 
 
 class BreakerPy(Breaker):

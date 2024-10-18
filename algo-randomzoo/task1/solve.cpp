@@ -1,3 +1,5 @@
+// g++ solve.cpp -O3 -o solve.exe && ./solve.exe
+// flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l
 #include <cassert>
 #include <cstring>
 #include <fstream>
@@ -23,7 +25,7 @@ int main(){
         cout << "Possible seed: " << seed << endl;
         next_loop:;
         if (seed % 0x1000000 == 0) {
-            cout << "Current seed: " << seed << endl;
+            cout << "Current seed: " << seed << " (" << seed / 0x1000000 << " / " << 0x10000  << ")" << endl;
         }
         if (seed == 0xffffffff) {
             break;
