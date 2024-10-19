@@ -22,3 +22,12 @@
 [submodule "FlagFinder"]
 	path = FlagFinder
 	url = https://github.com/SakuraRabbit18/FlagFinder
+[submodule "Sunshine"]
+	path = Sunshine
+	url = https://github.com/LizardByte/Sunshine
+[submodule "memos"]
+	path = memos
+	url = https://github.com/usememos/memos
+[submodule "binary-pymaster/pycdc"]
+	path = binary-pymaster/pycdc
+	url = https://github.com/zrax/pycdc
