@@ -1,0 +1,164 @@
+Autograder [Fri Oct 18 14:26:52 2024]: Received job Geek-ICS_datalab_3_geekgamer-256@geekgame.pku.edu.cn:3
+Autograder [Fri Oct 18 14:26:54 2024]: Success: Autodriver returned normally
+Autograder [Fri Oct 18 14:26:54 2024]: Here is the output from the autograder:
+---
+Autodriver: Job exited with status 0
+tar -m -xf autograde.tar
+tar -m -xf datalab-handin.tar.gz -C datalab-handout
+tar: Ignoring unknown extended header keyword 'LIBARCHIVE.xattr.com.apple.quarantine'
+cd datalab-handout; ./driver.pl -A
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+total 68
+drwxr-xr-x   1 root root 4096 Oct 18 14:26 .
+drwxr-xr-x   1 root root 4096 Oct 18 14:26 ..
+-rwxr-xr-x   1 root root    0 Oct 18 14:26 .dockerenv
+lrwxrwxrwx   1 root root    7 Sep 11 14:04 bin -> usr/bin
+drwxr-xr-x   2 root root 4096 Apr 18  2022 boot
+drwxr-xr-x   5 root root  320 Oct 18 14:26 dev
+drwxr-xr-x   1 root root 4096 Oct 18 14:26 etc
+drwxr-xr-x   1 root root 4096 Oct 18 14:26 home
+lrwxrwxrwx   1 root root    7 Sep 11 14:04 lib -> usr/lib
+lrwxrwxrwx   1 root root    9 Sep 11 14:04 lib32 -> usr/lib32
+lrwxrwxrwx   1 root root    9 Sep 11 14:04 lib64 -> usr/lib64
+lrwxrwxrwx   1 root root   10 Sep 11 14:04 libx32 -> usr/libx32
+drwxr-xr-x   2 root root 4096 Sep 11 14:04 media
+drwxr-xr-x   2 root root 4096 Sep 11 14:04 mnt
+drwxr-xr-x   2 root root 4096 Sep 11 14:04 opt
+dr-xr-xr-x 190 root root    0 Oct 18 14:26 proc
+drwx------   2 root root 4096 Sep 11 14:07 root
+drwxr-xr-x   1 root root 4096 Oct 18 14:26 run
+lrwxrwxrwx   1 root root    8 Sep 11 14:04 sbin -> usr/sbin
+drwxr-xr-x   2 root root 4096 Sep 11 14:04 srv
+dr-xr-xr-x  13 root root    0 Oct 18 14:26 sys
+drwxrwxrwt   1 root root 4096 Oct  7 10:29 tmp
+drwxr-xr-x   1 root root 4096 Sep 11 14:04 usr
+drwxr-xr-x   1 root root 4096 Sep 11 14:07 var
+total 8
+drwxr-xr-x 2 root root 4096 Sep 11 14:04 .
+drwxr-xr-x 1 root root 4096 Oct 18 14:26 ..
+cat: /mnt/flag3: No such file or directory
+find: '/etc/ssl/private': Permission denied
+find: '/proc/tty/driver': Permission denied
+find: '/proc/1/task/1/fd': Permission denied
+find: '/proc/1/task/1/fdinfo': Permission denied
+find: '/proc/1/task/1/ns': Permission denied
+find: '/proc/1/fd': Permission denied
+find: '/proc/1/map_files': Permission denied
+find: '/proc/1/fdinfo': Permission denied
+find: '/proc/1/ns': Permission denied
+find: '/proc/8/task/8/fd': Permission denied
+find: '/proc/8/task/8/fdinfo': Permission denied
+find: '/proc/8/task/8/ns': Permission denied
+find: '/proc/8/fd': Permission denied
+find: '/proc/8/map_files': Permission denied
+find: '/proc/8/fdinfo': Permission denied
+find: '/proc/8/ns': Permission denied
+find: '/proc/9/task/9/fd': Permission denied
+find: '/proc/9/task/9/fdinfo': Permission denied
+find: '/proc/9/task/9/ns': Permission denied
+find: '/proc/9/fd': Permission denied
+find: '/proc/9/map_files': Permission denied
+find: '/proc/9/fdinfo': Permission denied
+find: '/proc/9/ns': Permission denied
+find: '/proc/10/task/10/fd': Permission denied
+find: '/proc/10/task/10/fdinfo': Permission denied
+find: '/proc/10/task/10/ns': Permission denied
+find: '/proc/10/fd': Permission denied
+find: '/proc/10/map_files': Permission denied
+find: '/proc/10/fdinfo': Permission denied
+find: '/proc/10/ns': Permission denied
+find: '/run/sudo': Permission denied
+find: '/var/lib/apt/lists/partial': Permission denied
+find: '/var/cache/apt/archives/partial': Permission denied
+find: '/var/cache/ldconfig': Permission denied
+find: '/root': Permission denied
+/home/autograde/output.log
+/home/autograde/autolab/autograde.tar
+/home/autograde/autolab/Makefile
+/home/autograde/autolab/datalab-handout/btest.c
+/home/autograde/autolab/datalab-handout/bits.h
+/home/autograde/autolab/datalab-handout/bits.c
+/home/autograde/autolab/datalab-handout/fshow.c
+/home/autograde/autolab/datalab-handout/tests.c
+/home/autograde/autolab/datalab-handout/._driver.pl
+/home/autograde/autolab/datalab-handout/bddcheck/all-functions.txt
+/home/autograde/autolab/datalab-handout/bddcheck/satparse.pl
+/home/autograde/autolab/datalab-handout/bddcheck/check.pl
+/home/autograde/autolab/datalab-handout/bddcheck/README
+/home/autograde/autolab/datalab-handout/bddcheck/checkprogs.pl
+/home/autograde/autolab/datalab-handout/bddcheck/cbit/README
+/home/autograde/autolab/datalab-handout/bddcheck/cbit/cbit
+/home/autograde/autolab/datalab-handout/driver.pl
+/home/autograde/autolab/datalab-handout/Driverhdrs.pm
+/home/autograde/autolab/datalab-handout/Makefile
+/home/autograde/autolab/datalab-handout/dlc
+/home/autograde/autolab/datalab-handout/decl.c
+/home/autograde/autolab/datalab-handout/Driverlib.pm
+/home/autograde/autolab/datalab-handout/ishow.c
+/home/autograde/autolab/datalab-handout/README
+/home/autograde/autolab/datalab-handout/btest.h
+/home/autograde/autolab/datalab-handin.tar.gz
+total 24
+drwxr-xr-x 1 root      root      4096 Oct 18 14:26 .
+drwxr-xr-x 1 root      root      4096 Oct 18 14:26 ..
+drwxr-xr-x 1 autograde autograde 4096 Oct 18 14:26 autograde
+drwxr-xr-x 2 root      root      4096 Oct 18 14:26 mount
+drwxr-xr-x 1 autolab   autolab   4096 Oct 18 14:26 output
+total 24
+drwxr-xr-x 1 autograde autograde 4096 Oct 18 14:26 .
+drwxr-xr-x 1 root      root      4096 Oct 18 14:26 ..
+drwxr-xr-x 3 autograde autograde 4096 Oct 18 14:26 autolab
+-rw-r--r-- 1 autograde autograde 4856 Oct 18 14:26 output.log
+total 1884
+drwxr-xr-x 3 autograde autograde    4096 Oct 18 14:26 .
+drwxr-xr-x 1 autograde autograde    4096 Oct 18 14:26 ..
+-rw------- 1 autograde autograde     158 Oct 18 14:26 Makefile
+-rw------- 1 autograde autograde 1894400 Oct 18 14:26 autograde.tar
+-rw------- 1 autograde autograde   14848 Oct 18 14:26 datalab-handin.tar.gz
+drwxr-xr-x 3 autograde autograde    4096 Oct 18 14:26 datalab-handout
+This directory is for system-local terminfo descriptions. By default,
+ncurses will search ${HOME}/.terminfo first, then /etc/terminfo (this
+directory), then /lib/terminfo, and last not least /usr/share/terminfo.
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+autolab:x:1000:1000::/home/autolab:/bin/sh
+autograde:x:1001:1001::/home/autograde:/bin/sh
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+autolab:x:1000:1000::/home/autolab:/bin/sh
+sh: 1: rake: not found

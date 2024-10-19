@@ -22,10 +22,15 @@ S = "|1|........|........||"
 # input = "klmz3-smb.fm2"
 # output = "klmz3.bin"
 
+# out = b""
+# MAX = 5400
+# input = "klmz3-minus-world.fm2"
+# output = "minus-world.bin"
+
 out = b""
 MAX = 5400
-input = "klmz3-minus-world.fm2"
-output = "minus-world.bin"
+input = "minus.fm2"
+output = "minus.bin"
 
 # out = b"\0"
 # MAX = 5400

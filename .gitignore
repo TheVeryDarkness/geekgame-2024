@@ -1,2 +1,4 @@
 tutorial-signin.zip
 tutorial-signin/
+/*.zip
+**/__pycache__/

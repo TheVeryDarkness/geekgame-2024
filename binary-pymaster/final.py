@@ -172,7 +172,7 @@ def adJGrTXOYy(root: tree):
 
 def main(flag: str) -> bytes:
     random.seed('flag2 = flag{wElc0me_tO_THe_w0RlD_OF_pYtHON}')
-    random.randint(0, 65535) # 一不留神被我注释掉了
+    random.randint(0, 65535) # 太久没看这题，回来被我注释掉了
     # 我是智障
     root = tree()
 
