@@ -582,7 +582,7 @@ _1/1_
 
 一开始还是瞎点了挺久，看了一下网络日志，结果还用了 protobuf，本来想着把网络流下载下来按照源代码里的 `proto` 文件解析，但是嫌麻烦（而且当时这题做出来的人挺多，感觉没这么复杂），就作罢了。
 
-后来打算去看看源码，找到前端部分以后按照页面来找漏洞，先找的是 [explore.js](https://github.com/usememos/memos/tree/main/web/src/pages/Explore.tsx) 和 [home.js](https://github.com/usememos/memos/tree/main/web/src/pages/Home.tsx)，一翻到 `home.js` 就发现[有一处用户过滤的代码](https://github.com/usememos/memos/tree/main/web/src/pages/Home.tsx#L22)，立即意识到了问题：这种操作根本不应该放在前端。于是到浏览器里搜索字符串（运气似乎很好，搜的 `property.hasTaskList` 在源代码里只在一处过滤代码中出现了），稍微比对了一下，打了个断点开始修改过滤器，最后得到了 flag。
+后来打算去看看源码，找到前端部分以后按照页面来找漏洞，先找的是 [explore](https://github.com/usememos/memos/tree/main/web/src/pages/Explore.tsx) 和 [home](https://github.com/usememos/memos/tree/main/web/src/pages/Home.tsx)，一翻到 `home` 就发现[有一处用户过滤的代码](https://github.com/usememos/memos/tree/main/web/src/pages/Home.tsx#L22)，立即意识到了问题：这种操作根本不应该放在前端。于是到浏览器里搜索字符串（运气似乎很好，搜的 `property.hasTaskList` 在源代码里只在一处过滤代码中出现了），稍微比对了一下，打了个断点开始在控制台里修改过滤器，最后得到了 flag。
 
 ## ICS 笑传之抄抄榜
 
