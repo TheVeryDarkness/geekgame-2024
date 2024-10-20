@@ -25,7 +25,7 @@ int main(){
         cout << "Possible seed: " << seed << endl;
         next_loop:;
         if (seed % 0x1000000 == 0) {
-            cout << "Current seed: " << seed << " (" << seed / 0x1000000 << " / " << 0x10000  << ")" << endl;
+            cout << "Current seed: " << seed << " (" << seed / 0x1000000 << " / " << 0x100  << ")" << endl;
         }
         if (seed == 0xffffffff) {
             break;
