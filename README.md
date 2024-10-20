@@ -2,7 +2,7 @@
 
 不愧是你北，题出得很有难度，形式挺多。不过有时候不太能猜出来出题人的意图。
 
-文件夹乱七八糟的，不想压缩了，全塞 markdown 里吧，结束以后大概会公开[仓库](https://github.com/TheVeryDarkness/geekgame-2024.git)。
+文件夹乱七八糟的，不想压缩了，全塞 markdown 里吧，Writeup 提交时间截止以后大概会公开[仓库](https://github.com/TheVeryDarkness/geekgame-2024.git)。
 
 （这次分配到了一个整数 UID，非常棒）
 
